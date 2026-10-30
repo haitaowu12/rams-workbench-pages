@@ -1,0 +1,31 @@
+{
+  "source_commit": "e30feec22ccb99fa9c1734139ec7c5022db7a1d0",
+  "hosting": "GitHub Pages branch publishing",
+  "files": [
+    {
+      "path": "example-study.json",
+      "bytes": 81188,
+      "sha256": "dc97a0e5e08d77c18cea4f63c8a64cbb6557ce6775b0564d05c7006312fb192b"
+    },
+    {
+      "path": "index.html",
+      "bytes": 3732,
+      "sha256": "5cda8b2ed6e0caad7ad4e562f860bacbd7c1f92466a4271d07bc25e6403c474e"
+    },
+    {
+      "path": "rams-workbench.zip",
+      "bytes": 157659,
+      "sha256": "f3200a687ea1e5e62c47e7104609050838ca21539791fb7bcabd96d5121e0721"
+    },
+    {
+      "path": "rams-workbench.zip.sha256",
+      "bytes": 85,
+      "sha256": "8729ad72c83b1dfba7fe3520853c26074d321e7a586dd123f4fe4da2098807bc"
+    },
+    {
+      "path": "study.html",
+      "bytes": 630716,
+      "sha256": "423d3244af6b086f8ad5dc57389edc2ac4011d8c7188d318d3d40edf82da7e51"
+    }
+  ]
+}

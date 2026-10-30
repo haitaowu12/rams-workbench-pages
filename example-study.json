@@ -1,0 +1,2252 @@
+{
+  "format": "rams-workbench/1",
+  "project": {
+    "id": "P296213825b914b9e89a16607b1a57d2d",
+    "title": "Station systems \u2014 complete demonstration study",
+    "revision": 1,
+    "config": {
+      "acceptance_process": "Training only. No approval authority or compliance claim.",
+      "configuration": "Synthetic station concept, design revision 1",
+      "governing_basis": "Fictional method demonstration with invented criteria. No contractual standard or safety approval is asserted.",
+      "governing_standards": [],
+      "import_lineage": {
+        "entities": [
+          {
+            "data": {},
+            "description": "",
+            "id": "STATION",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Synthetic station control system"
+          },
+          {
+            "data": {},
+            "description": "",
+            "id": "MODE_NORMAL",
+            "kind": "operating_mode",
+            "revision": 1,
+            "state": "draft",
+            "title": "Normal operation"
+          },
+          {
+            "data": {},
+            "description": "",
+            "id": "CHANNEL_TYPE",
+            "kind": "part_type",
+            "revision": 1,
+            "state": "draft",
+            "title": "Control channel reference type"
+          },
+          {
+            "data": {
+              "conditions": "Fictional indoor station; continuous active operation",
+              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_status": "reviewed_independent",
+              "mean_active_repair_hours": 4,
+              "mode": "normal",
+              "model": "exponential",
+              "rate_per_hour": 5e-05,
+              "source": "Synthetic training fixture, revision 1"
+            },
+            "description": "",
+            "id": "PSU",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Shared power supply"
+          },
+          {
+            "data": {
+              "conditions": "Fictional indoor station; continuous active operation",
+              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_status": "reviewed_independent",
+              "mean_active_repair_hours": 2,
+              "mode": "normal",
+              "model": "exponential",
+              "rate_per_hour": 0.0001,
+              "source": "Synthetic training fixture, revision 1"
+            },
+            "description": "",
+            "id": "CH_A",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Control channel A"
+          },
+          {
+            "data": {
+              "conditions": "Fictional indoor station; continuous active operation",
+              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_status": "reviewed_independent",
+              "mean_active_repair_hours": 3,
+              "mode": "normal",
+              "model": "exponential",
+              "rate_per_hour": 0.0002,
+              "source": "Synthetic training fixture, revision 1"
+            },
+            "description": "",
+            "id": "CH_B",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Control channel B"
+          },
+          {
+            "data": {},
+            "description": "",
+            "id": "F_CONTROL",
+            "kind": "function",
+            "revision": 1,
+            "state": "draft",
+            "title": "Provide station-control service"
+          },
+          {
+            "data": {
+              "assumptions": [
+                "One shared supply represented explicitly in the RBD."
+              ],
+              "from": "PSU",
+              "supplier_boundary": "Synthetic supplier interface",
+              "to": "CH_A, CH_B"
+            },
+            "description": "",
+            "id": "IF_POWER",
+            "kind": "interface",
+            "revision": 1,
+            "state": "draft",
+            "title": "Shared power interface"
+          },
+          {
+            "data": {
+              "boundary": "Station-control service during normal operation",
+              "decision": {
+                "outcome": "pending"
+              },
+              "initial": {
+                "frequency": "F2",
+                "severity": "S3"
+              },
+              "mode": "normal",
+              "owner": "Training reviewer",
+              "residual": {
+                "frequency": "F1",
+                "severity": "S3"
+              },
+              "severity": "S3"
+            },
+            "description": "Fictional hazard for workflow demonstration; no real railway safety judgment.",
+            "id": "HZ_001",
+            "kind": "hazard",
+            "revision": 1,
+            "state": "draft",
+            "title": "Loss of control indication during normal operation"
+          },
+          {
+            "data": {},
+            "description": "",
+            "id": "CAUSE_001",
+            "kind": "cause",
+            "revision": 1,
+            "state": "draft",
+            "title": "Loss of shared power"
+          },
+          {
+            "data": {},
+            "description": "",
+            "id": "CONS_001",
+            "kind": "consequence",
+            "revision": 1,
+            "state": "draft",
+            "title": "Operator cannot confirm control indication"
+          },
+          {
+            "data": {
+              "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+              "independence_domain": "Needs project-specific validation",
+              "owner": "Training owner",
+              "performance_standard": "Detect loss of current status and enter the declared restricted operating state; project timing and coverage remain to be specified.",
+              "status": "proposed",
+              "type": "preventive"
+            },
+            "description": "",
+            "id": "CTRL_001",
+            "kind": "control",
+            "revision": 1,
+            "state": "draft",
+            "title": "Independent status indication and operating restriction"
+          },
+          {
+            "data": {
+              "external_id": "SYN-REQ-001",
+              "source_baseline": "1",
+              "source_system": "synthetic",
+              "verification_method": "test"
+            },
+            "description": "The station-control system shall indicate loss of status feedback.",
+            "id": "REQ_001",
+            "kind": "requirement",
+            "revision": 1,
+            "state": "draft",
+            "title": "Detect loss of status indication"
+          },
+          {
+            "data": {
+              "external_id": "SYN-REQ-002",
+              "source_baseline": "1",
+              "source_system": "synthetic",
+              "verification_method": "inspection"
+            },
+            "description": "The operating procedure shall define the response to loss of status indication.",
+            "id": "REQ_002",
+            "kind": "requirement",
+            "revision": 1,
+            "state": "draft",
+            "title": "Define restricted operation after indication loss"
+          },
+          {
+            "data": {
+              "applicability": "Illustrative only, no actual test execution",
+              "artifact": "synthetic://test-001",
+              "artifact_revision": "1",
+              "configuration": "Synthetic baseline 1; normal mode",
+              "result": "pass",
+              "reviewer": "Synthetic reviewer declaration"
+            },
+            "description": "",
+            "id": "VER_001",
+            "kind": "verification",
+            "revision": 1,
+            "state": "draft",
+            "title": "Synthetic loss-of-feedback test"
+          },
+          {
+            "data": {
+              "completion_evidence": "",
+              "due": "unassigned",
+              "owner": "Training owner"
+            },
+            "description": "",
+            "id": "ACT_001",
+            "kind": "action",
+            "revision": 1,
+            "state": "draft",
+            "title": "Prepare and inspect restricted-operation procedure"
+          },
+          {
+            "data": {
+              "intent": "Provide current status to operator",
+              "mode": "normal",
+              "participants": [
+                "Training analyst"
+              ],
+              "session": "Synthetic workshop",
+              "source": "synthetic://design-1"
+            },
+            "description": "",
+            "id": "NODE_001",
+            "kind": "study_node",
+            "revision": 1,
+            "state": "draft",
+            "title": "Control indication function"
+          },
+          {
+            "data": {
+              "causes": [
+                "Loss of shared power"
+              ],
+              "consequences": [
+                "Operator lacks current status"
+              ],
+              "examination": "finding",
+              "examination_basis": "Synthetic desk-study finding; no multidisciplinary workshop was performed.",
+              "guideword": "No",
+              "parameter": "status feedback",
+              "recommendations": [
+                "Review independent indication and restricted operation"
+              ],
+              "safeguards": [
+                "Existing safeguards not demonstrated; proposed measures remain separate."
+              ]
+            },
+            "description": "",
+            "id": "DEV_001",
+            "kind": "deviation",
+            "revision": 1,
+            "state": "draft",
+            "title": "No status indication"
+          },
+          {
+            "data": {
+              "conditions": "Synthetic event boundary at 100 hours; not hardware rates or project defaults",
+              "dependency_review": "Three independent basic-event identities; shared initiator appears in both paths as the same event, not a copied independent occurrence.",
+              "dependency_status": "reviewed_independent",
+              "mission_hours": 100,
+              "mode": "normal",
+              "probability": 0.1,
+              "source": "Invented event probabilities for a shared-event Boolean example"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "EV_SHARED",
+            "kind": "fault_event",
+            "revision": 1,
+            "state": "draft",
+            "title": "Shared initiating event"
+          },
+          {
+            "data": {
+              "conditions": "Synthetic event boundary at 100 hours; not hardware rates or project defaults",
+              "dependency_review": "Three independent basic-event identities; shared initiator appears in both paths as the same event, not a copied independent occurrence.",
+              "dependency_status": "reviewed_independent",
+              "mission_hours": 100,
+              "mode": "normal",
+              "probability": 0.2,
+              "source": "Invented event probabilities for a shared-event Boolean example"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "EV_A",
+            "kind": "fault_event",
+            "revision": 1,
+            "state": "draft",
+            "title": "Branch A event"
+          },
+          {
+            "data": {
+              "conditions": "Synthetic event boundary at 100 hours; not hardware rates or project defaults",
+              "dependency_review": "Three independent basic-event identities; shared initiator appears in both paths as the same event, not a copied independent occurrence.",
+              "dependency_status": "reviewed_independent",
+              "mission_hours": 100,
+              "mode": "normal",
+              "probability": 0.3,
+              "source": "Invented event probabilities for a shared-event Boolean example"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "EV_B",
+            "kind": "fault_event",
+            "revision": 1,
+            "state": "draft",
+            "title": "Branch B event"
+          },
+          {
+            "data": {
+              "logic": "OR",
+              "mode": "normal"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "FT_TOP",
+            "kind": "fault_gate",
+            "revision": 1,
+            "state": "draft",
+            "title": "Shared initiator with either branch event"
+          },
+          {
+            "data": {
+              "logic": "AND",
+              "mode": "normal"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "FT_PATH_A",
+            "kind": "fault_gate",
+            "revision": 1,
+            "state": "draft",
+            "title": "Shared initiator and branch A event"
+          },
+          {
+            "data": {
+              "logic": "AND",
+              "mode": "normal"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "FT_PATH_B",
+            "kind": "fault_gate",
+            "revision": 1,
+            "state": "draft",
+            "title": "Shared initiator and branch B event"
+          },
+          {
+            "data": {
+              "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+              "independence_domain": "Unvalidated synthetic proposal",
+              "owner": "Training owner",
+              "performance_standard": "Provide an independently justified source for status indication after the shared supply fails; demonstration obligation NORMAL_POWER_LOSS remains open.",
+              "status": "proposed",
+              "type": "preventive"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "CTRL_POWER",
+            "kind": "control",
+            "revision": 1,
+            "state": "draft",
+            "title": "Independent power for status indication"
+          },
+          {
+            "data": {
+              "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+              "independence_domain": "Unvalidated synthetic operating response",
+              "owner": "Training owner",
+              "performance_standard": "Enter the restricted operating procedure after indication loss; response timing and human-performance evidence remain open.",
+              "status": "proposed",
+              "type": "mitigative"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "CTRL_RESPONSE",
+            "kind": "control",
+            "revision": 1,
+            "state": "draft",
+            "title": "Restricted-operation response"
+          },
+          {
+            "data": {
+              "obligations": [
+                {
+                  "configuration": "Synthetic station concept",
+                  "id": "NORMAL_POWER_LOSS",
+                  "mode": "normal"
+                }
+              ],
+              "source_baseline": "1",
+              "source_system": "synthetic",
+              "verification_method": "test"
+            },
+            "description": "Fictional methodology example; no actual railway judgment.",
+            "id": "REQ_POWER",
+            "kind": "requirement",
+            "revision": 1,
+            "state": "draft",
+            "title": "Maintain status indication after shared supply loss"
+          },
+          {
+            "data": {
+              "conditions": "Fictional indoor station; continuous active operation",
+              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_status": "reviewed_independent",
+              "mean_active_repair_hours": 2,
+              "mode": "normal",
+              "model": "exponential",
+              "rate_per_hour": 8e-05,
+              "source": "Synthetic training fixture, revision 1"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "DOOR",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Platform access controller"
+          },
+          {
+            "data": {
+              "conditions": "Fictional indoor station; continuous active operation",
+              "dependency_review": "Two independent active lighting circuits in this fictional model; separate repair resources. No real project independence established.",
+              "dependency_status": "reviewed_independent",
+              "mean_active_repair_hours": 3,
+              "mode": "normal",
+              "model": "exponential",
+              "rate_per_hour": 3e-05,
+              "source": "Synthetic training fixture, revision 1"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "LIGHT_A",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Emergency lighting circuit A"
+          },
+          {
+            "data": {
+              "conditions": "Fictional indoor station; continuous active operation",
+              "dependency_review": "Two independent active lighting circuits in this fictional model; separate repair resources. No real project independence established.",
+              "dependency_status": "reviewed_independent",
+              "mean_active_repair_hours": 3,
+              "mode": "normal",
+              "model": "exponential",
+              "rate_per_hour": 4e-05,
+              "source": "Synthetic training fixture, revision 1"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "LIGHT_B",
+            "kind": "item",
+            "revision": 1,
+            "state": "draft",
+            "title": "Emergency lighting circuit B"
+          },
+          {
+            "data": {
+              "boundary": "Platform access during normal station operation",
+              "decision": {
+                "outcome": "pending"
+              },
+              "initial": {
+                "frequency": "F2",
+                "severity": "S3"
+              },
+              "mode": "normal",
+              "owner": "Synthetic systems team",
+              "residual": {
+                "frequency": "F1",
+                "severity": "S3"
+              },
+              "severity": "S3"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "HZ_002",
+            "kind": "hazard",
+            "revision": 1,
+            "state": "draft",
+            "title": "Unintended platform access release"
+          },
+          {
+            "data": {},
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "CAUSE_002",
+            "kind": "cause",
+            "revision": 1,
+            "state": "draft",
+            "title": "Incorrect release command"
+          },
+          {
+            "data": {},
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "CONS_002",
+            "kind": "consequence",
+            "revision": 1,
+            "state": "draft",
+            "title": "Passenger exposed to an unsafe access condition"
+          },
+          {
+            "data": {
+              "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+              "owner": "Synthetic systems team",
+              "performance_standard": "Permit release only when the authorized synthetic conditions are confirmed; REQ_002_STUDY defines the intended test.",
+              "status": "proposed",
+              "type": "preventive"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "CTRL_002",
+            "kind": "control",
+            "revision": 1,
+            "state": "draft",
+            "title": "Release interlock"
+          },
+          {
+            "data": {
+              "source_baseline": "1",
+              "source_system": "synthetic",
+              "verification_method": "test"
+            },
+            "description": "Permit release only when the authorized conditions are confirmed.",
+            "id": "REQ_002_STUDY",
+            "kind": "requirement",
+            "revision": 1,
+            "state": "draft",
+            "title": "Permit release only when the authorized conditions are confirmed"
+          },
+          {
+            "data": {
+              "completion_evidence": "",
+              "due": "Not scheduled",
+              "owner": "Synthetic verification team"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "ACT_002",
+            "kind": "action",
+            "revision": 1,
+            "state": "draft",
+            "title": "Prepare interlock test evidence"
+          },
+          {
+            "data": {
+              "causes": [
+                "Incorrect command logic or invalid condition input; synthetic causes to investigate."
+              ],
+              "criticality_basis": "Qualitative consequence review using the invented study matrix; no quantitative criticality or RPN.",
+              "detection": "Planned functional inspection",
+              "failure_mode": "Incorrect release command",
+              "function": "Control platform access under the declared authorized conditions.",
+              "local_effect": "Controller issues a release command without all authorized conditions.",
+              "mode": "normal",
+              "next_effect": "Access interlock may permit release.",
+              "owner": "Synthetic systems team",
+              "recommendations": [
+                "Execute the declared verification"
+              ],
+              "response": "Withhold release and follow the defined restricted operation; response is a proposed design provision.",
+              "severity": "S3 \u2014 invented demonstration class",
+              "source": "synthetic://platform-design-1",
+              "system_effect": "Platform access can be released during an unsafe condition."
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "FM_002",
+            "kind": "failure_mode",
+            "revision": 1,
+            "state": "draft",
+            "title": "Incorrect release command"
+          },
+          {
+            "data": {
+              "boundary": "Station lighting during a normal-mode loss-of-supply demand",
+              "decision": {
+                "outcome": "pending"
+              },
+              "initial": {
+                "frequency": "F2",
+                "severity": "S3"
+              },
+              "mode": "normal",
+              "owner": "Synthetic systems team",
+              "residual": {
+                "frequency": "F1",
+                "severity": "S3"
+              },
+              "severity": "S3"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "HZ_003",
+            "kind": "hazard",
+            "revision": 1,
+            "state": "draft",
+            "title": "Emergency lighting unavailable"
+          },
+          {
+            "data": {},
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "CAUSE_003",
+            "kind": "cause",
+            "revision": 1,
+            "state": "draft",
+            "title": "Loss of a lighting circuit"
+          },
+          {
+            "data": {},
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "CONS_003",
+            "kind": "consequence",
+            "revision": 1,
+            "state": "draft",
+            "title": "Reduced visibility along the evacuation route"
+          },
+          {
+            "data": {
+              "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+              "owner": "Synthetic systems team",
+              "performance_standard": "Maintain the defined evacuation-route illumination after either lighting circuit fails; REQ_003_STUDY defines the intended test.",
+              "status": "proposed",
+              "type": "preventive"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "CTRL_003",
+            "kind": "control",
+            "revision": 1,
+            "state": "draft",
+            "title": "Independent lighting circuits"
+          },
+          {
+            "data": {
+              "source_baseline": "1",
+              "source_system": "synthetic",
+              "verification_method": "test"
+            },
+            "description": "Maintain illumination after one lighting circuit fails.",
+            "id": "REQ_003_STUDY",
+            "kind": "requirement",
+            "revision": 1,
+            "state": "draft",
+            "title": "Maintain illumination after one lighting circuit fails"
+          },
+          {
+            "data": {
+              "completion_evidence": "",
+              "due": "Not scheduled",
+              "owner": "Synthetic verification team"
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "ACT_003",
+            "kind": "action",
+            "revision": 1,
+            "state": "draft",
+            "title": "Prepare lighting single-failure test evidence"
+          },
+          {
+            "data": {
+              "causes": [
+                "Loss of one supply or luminaire circuit; synthetic causes to investigate."
+              ],
+              "criticality_basis": "Qualitative consequence review using the invented study matrix; independent-circuit mission probability is a separate RAM model.",
+              "detection": "Planned functional inspection",
+              "failure_mode": "Loss of a lighting circuit",
+              "function": "Provide illumination along the defined evacuation route.",
+              "local_effect": "One lighting circuit stops providing its intended illumination.",
+              "mode": "normal",
+              "next_effect": "The independent circuit is required to maintain the defined illumination.",
+              "owner": "Synthetic systems team",
+              "recommendations": [
+                "Execute the declared verification"
+              ],
+              "response": "Independent circuit is a proposed compensating provision; actual illumination test remains open.",
+              "severity": "S3 \u2014 invented demonstration class",
+              "source": "synthetic://lighting-design-1",
+              "system_effect": "Evacuation illumination is lost if the remaining support also fails."
+            },
+            "description": "Fictional training record; no project acceptance implied.",
+            "id": "FM_003",
+            "kind": "failure_mode",
+            "revision": 1,
+            "state": "draft",
+            "title": "Loss of a lighting circuit"
+          }
+        ],
+        "format": "rams-workbench/1",
+        "links": [
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "contains",
+            "source": "STATION",
+            "target": "PSU"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "contains",
+            "source": "STATION",
+            "target": "CH_A"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "contains",
+            "source": "STATION",
+            "target": "CH_B"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "instance_of",
+            "source": "CH_A",
+            "target": "CHANNEL_TYPE"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "instance_of",
+            "source": "CH_B",
+            "target": "CHANNEL_TYPE"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "applies_to",
+            "source": "HZ_001",
+            "target": "STATION"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "operates_in",
+            "source": "HZ_001",
+            "target": "MODE_NORMAL"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "causes",
+            "source": "CAUSE_001",
+            "target": "HZ_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "causes",
+            "source": "HZ_001",
+            "target": "CONS_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "controls",
+            "source": "CTRL_001",
+            "target": "HZ_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "implements",
+            "source": "REQ_001",
+            "target": "CTRL_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "implements",
+            "source": "REQ_002",
+            "target": "CTRL_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "verifies",
+            "source": "VER_001",
+            "target": "REQ_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "addresses",
+            "source": "ACT_001",
+            "target": "REQ_002"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "studies",
+            "source": "NODE_001",
+            "target": "F_CONTROL"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "deviates",
+            "source": "DEV_001",
+            "target": "NODE_001"
+          },
+          {
+            "rationale": "Synthetic training relationship; review applicability.",
+            "relation": "causes",
+            "source": "DEV_001",
+            "target": "HZ_001"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "input_to",
+            "source": "EV_SHARED",
+            "target": "FT_PATH_A"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "input_to",
+            "source": "EV_A",
+            "target": "FT_PATH_A"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "input_to",
+            "source": "EV_SHARED",
+            "target": "FT_PATH_B"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "input_to",
+            "source": "EV_B",
+            "target": "FT_PATH_B"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "input_to",
+            "source": "FT_PATH_A",
+            "target": "FT_TOP"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "input_to",
+            "source": "FT_PATH_B",
+            "target": "FT_TOP"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "controls",
+            "source": "CTRL_POWER",
+            "target": "HZ_001"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "prevents",
+            "source": "CTRL_POWER",
+            "target": "CAUSE_001"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "controls",
+            "source": "CTRL_RESPONSE",
+            "target": "HZ_001"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "mitigates",
+            "source": "CTRL_RESPONSE",
+            "target": "CONS_001"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "implements",
+            "source": "REQ_POWER",
+            "target": "CTRL_POWER"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "implements",
+            "source": "REQ_002",
+            "target": "CTRL_RESPONSE"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "analyzes",
+            "source": "FT_TOP",
+            "target": "HZ_001"
+          },
+          {
+            "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+            "relation": "applies_to",
+            "source": "FT_TOP",
+            "target": "STATION"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "contains",
+            "source": "STATION",
+            "target": "DOOR"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "contains",
+            "source": "STATION",
+            "target": "LIGHT_A"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "contains",
+            "source": "STATION",
+            "target": "LIGHT_B"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "applies_to",
+            "source": "HZ_002",
+            "target": "DOOR"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "operates_in",
+            "source": "HZ_002",
+            "target": "MODE_NORMAL"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "causes",
+            "source": "CAUSE_002",
+            "target": "HZ_002"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "causes",
+            "source": "HZ_002",
+            "target": "CONS_002"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "controls",
+            "source": "CTRL_002",
+            "target": "HZ_002"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "prevents",
+            "source": "CTRL_002",
+            "target": "CAUSE_002"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "implements",
+            "source": "REQ_002_STUDY",
+            "target": "CTRL_002"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "addresses",
+            "source": "ACT_002",
+            "target": "REQ_002_STUDY"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "applies_to",
+            "source": "FM_002",
+            "target": "DOOR"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "applies_to",
+            "source": "HZ_003",
+            "target": "LIGHT_A"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "operates_in",
+            "source": "HZ_003",
+            "target": "MODE_NORMAL"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "causes",
+            "source": "CAUSE_003",
+            "target": "HZ_003"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "causes",
+            "source": "HZ_003",
+            "target": "CONS_003"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "controls",
+            "source": "CTRL_003",
+            "target": "HZ_003"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "prevents",
+            "source": "CTRL_003",
+            "target": "CAUSE_003"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "implements",
+            "source": "REQ_003_STUDY",
+            "target": "CTRL_003"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "addresses",
+            "source": "ACT_003",
+            "target": "REQ_003_STUDY"
+          },
+          {
+            "rationale": "Declared relationship in the complete synthetic study.",
+            "relation": "applies_to",
+            "source": "FM_003",
+            "target": "LIGHT_A"
+          },
+          {
+            "rationale": "Indication loss is assessed on the shared supply within the control success model.",
+            "relation": "applies_to",
+            "source": "HZ_001",
+            "target": "PSU"
+          },
+          {
+            "rationale": "Emergency lighting hazard applies to both explicitly modelled lighting circuits.",
+            "relation": "applies_to",
+            "source": "HZ_003",
+            "target": "LIGHT_B"
+          },
+          {
+            "rationale": "Synthetic erroneous output failure can initiate the platform-access hazard.",
+            "relation": "causes",
+            "source": "FM_002",
+            "target": "HZ_002"
+          },
+          {
+            "rationale": "Synthetic loss of a lighting circuit contributes to loss of emergency illumination.",
+            "relation": "causes",
+            "source": "FM_003",
+            "target": "HZ_003"
+          },
+          {
+            "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+            "relation": "fails",
+            "source": "FM_002",
+            "target": "DOOR"
+          },
+          {
+            "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+            "relation": "fails",
+            "source": "FM_003",
+            "target": "LIGHT_A"
+          },
+          {
+            "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+            "relation": "fails",
+            "source": "FM_003",
+            "target": "LIGHT_B"
+          },
+          {
+            "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+            "relation": "addresses",
+            "source": "ACT_001",
+            "target": "DEV_001"
+          }
+        ],
+        "project": {
+          "config": {
+            "acceptance_process": "Training only. No approval authority or compliance claim.",
+            "configuration": "Synthetic station concept, design revision 1",
+            "governing_basis": "Fictional method demonstration with invented criteria. No contractual standard or safety approval is asserted.",
+            "governing_standards": [],
+            "lifecycle_phase": "Concept design review \u2014 demonstration only",
+            "operating_context": "Fictional station: control indication, platform access and emergency lighting. Three hazards and two calculated RAM studies demonstrate a complete review workflow. All rates, probabilities and evidence are synthetic.",
+            "profile": "generic-rail-study",
+            "risk_matrix": {
+              "cells": [
+                {
+                  "category": "study category low",
+                  "frequency": "F1",
+                  "severity": "S1"
+                },
+                {
+                  "category": "study category low",
+                  "frequency": "F2",
+                  "severity": "S1"
+                },
+                {
+                  "category": "review required",
+                  "frequency": "F3",
+                  "severity": "S1"
+                },
+                {
+                  "category": "study category low",
+                  "frequency": "F1",
+                  "severity": "S2"
+                },
+                {
+                  "category": "study category low",
+                  "frequency": "F2",
+                  "severity": "S2"
+                },
+                {
+                  "category": "review required",
+                  "frequency": "F3",
+                  "severity": "S2"
+                },
+                {
+                  "category": "review required",
+                  "frequency": "F1",
+                  "severity": "S3"
+                },
+                {
+                  "category": "review required",
+                  "frequency": "F2",
+                  "severity": "S3"
+                },
+                {
+                  "category": "review required",
+                  "frequency": "F3",
+                  "severity": "S3"
+                }
+              ],
+              "frequency_classes": [
+                "F1",
+                "F2",
+                "F3"
+              ],
+              "id": "SYN-MATRIX",
+              "revision": "1",
+              "severity_classes": [
+                "S1",
+                "S2",
+                "S3"
+              ],
+              "source": "Invented training categories; not an EN 50126 default"
+            },
+            "system_boundary": "Synthetic station indication, platform access and evacuation lighting. Signalling movement authority, platform geometry and train braking are excluded."
+          },
+          "id": "SYNTHETIC_COMPLETE_STATION",
+          "revision": 1,
+          "title": "Station systems \u2014 complete demonstration study"
+        }
+      },
+      "lifecycle_phase": "Concept design review \u2014 demonstration only",
+      "operating_context": "Fictional station: control indication, platform access and emergency lighting. Three hazards and two calculated RAM studies demonstrate a complete review workflow. All rates, probabilities and evidence are synthetic.",
+      "profile": "generic-rail-study",
+      "risk_matrix": {
+        "cells": [
+          {
+            "category": "study category low",
+            "frequency": "F1",
+            "severity": "S1"
+          },
+          {
+            "category": "study category low",
+            "frequency": "F2",
+            "severity": "S1"
+          },
+          {
+            "category": "review required",
+            "frequency": "F3",
+            "severity": "S1"
+          },
+          {
+            "category": "study category low",
+            "frequency": "F1",
+            "severity": "S2"
+          },
+          {
+            "category": "study category low",
+            "frequency": "F2",
+            "severity": "S2"
+          },
+          {
+            "category": "review required",
+            "frequency": "F3",
+            "severity": "S2"
+          },
+          {
+            "category": "review required",
+            "frequency": "F1",
+            "severity": "S3"
+          },
+          {
+            "category": "review required",
+            "frequency": "F2",
+            "severity": "S3"
+          },
+          {
+            "category": "review required",
+            "frequency": "F3",
+            "severity": "S3"
+          }
+        ],
+        "frequency_classes": [
+          "F1",
+          "F2",
+          "F3"
+        ],
+        "id": "SYN-MATRIX",
+        "revision": "1",
+        "severity_classes": [
+          "S1",
+          "S2",
+          "S3"
+        ],
+        "source": "Invented training categories; not an EN 50126 default"
+      },
+      "system_boundary": "Synthetic station indication, platform access and evacuation lighting. Signalling movement authority, platform geometry and train braking are excluded."
+    }
+  },
+  "entities": [
+    {
+      "data": {
+        "completion_evidence": "",
+        "due": "unassigned",
+        "owner": "Training owner"
+      },
+      "description": "",
+      "id": "ACT_001",
+      "kind": "action",
+      "revision": 1,
+      "state": "draft",
+      "title": "Prepare and inspect restricted-operation procedure"
+    },
+    {
+      "data": {
+        "completion_evidence": "",
+        "due": "Not scheduled",
+        "owner": "Synthetic verification team"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "ACT_002",
+      "kind": "action",
+      "revision": 1,
+      "state": "draft",
+      "title": "Prepare interlock test evidence"
+    },
+    {
+      "data": {
+        "completion_evidence": "",
+        "due": "Not scheduled",
+        "owner": "Synthetic verification team"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "ACT_003",
+      "kind": "action",
+      "revision": 1,
+      "state": "draft",
+      "title": "Prepare lighting single-failure test evidence"
+    },
+    {
+      "data": {},
+      "description": "",
+      "id": "CAUSE_001",
+      "kind": "cause",
+      "revision": 1,
+      "state": "draft",
+      "title": "Loss of shared power"
+    },
+    {
+      "data": {},
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "CAUSE_002",
+      "kind": "cause",
+      "revision": 1,
+      "state": "draft",
+      "title": "Incorrect release command"
+    },
+    {
+      "data": {},
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "CAUSE_003",
+      "kind": "cause",
+      "revision": 1,
+      "state": "draft",
+      "title": "Loss of a lighting circuit"
+    },
+    {
+      "data": {},
+      "description": "",
+      "id": "CHANNEL_TYPE",
+      "kind": "part_type",
+      "revision": 1,
+      "state": "draft",
+      "title": "Control channel reference type"
+    },
+    {
+      "data": {
+        "conditions": "Fictional indoor station; continuous active operation",
+        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_status": "reviewed_independent",
+        "mean_active_repair_hours": 2,
+        "mode": "normal",
+        "model": "exponential",
+        "rate_per_hour": 0.0001,
+        "source": "Synthetic training fixture, revision 1"
+      },
+      "description": "",
+      "id": "CH_A",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Control channel A"
+    },
+    {
+      "data": {
+        "conditions": "Fictional indoor station; continuous active operation",
+        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_status": "reviewed_independent",
+        "mean_active_repair_hours": 3,
+        "mode": "normal",
+        "model": "exponential",
+        "rate_per_hour": 0.0002,
+        "source": "Synthetic training fixture, revision 1"
+      },
+      "description": "",
+      "id": "CH_B",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Control channel B"
+    },
+    {
+      "data": {},
+      "description": "",
+      "id": "CONS_001",
+      "kind": "consequence",
+      "revision": 1,
+      "state": "draft",
+      "title": "Operator cannot confirm control indication"
+    },
+    {
+      "data": {},
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "CONS_002",
+      "kind": "consequence",
+      "revision": 1,
+      "state": "draft",
+      "title": "Passenger exposed to an unsafe access condition"
+    },
+    {
+      "data": {},
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "CONS_003",
+      "kind": "consequence",
+      "revision": 1,
+      "state": "draft",
+      "title": "Reduced visibility along the evacuation route"
+    },
+    {
+      "data": {
+        "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+        "independence_domain": "Needs project-specific validation",
+        "owner": "Training owner",
+        "performance_standard": "Detect loss of current status and enter the declared restricted operating state; project timing and coverage remain to be specified.",
+        "status": "proposed",
+        "type": "preventive"
+      },
+      "description": "",
+      "id": "CTRL_001",
+      "kind": "control",
+      "revision": 1,
+      "state": "draft",
+      "title": "Independent status indication and operating restriction"
+    },
+    {
+      "data": {
+        "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+        "owner": "Synthetic systems team",
+        "performance_standard": "Permit release only when the authorized synthetic conditions are confirmed; REQ_002_STUDY defines the intended test.",
+        "status": "proposed",
+        "type": "preventive"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "CTRL_002",
+      "kind": "control",
+      "revision": 1,
+      "state": "draft",
+      "title": "Release interlock"
+    },
+    {
+      "data": {
+        "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+        "owner": "Synthetic systems team",
+        "performance_standard": "Maintain the defined evacuation-route illumination after either lighting circuit fails; REQ_003_STUDY defines the intended test.",
+        "status": "proposed",
+        "type": "preventive"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "CTRL_003",
+      "kind": "control",
+      "revision": 1,
+      "state": "draft",
+      "title": "Independent lighting circuits"
+    },
+    {
+      "data": {
+        "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+        "independence_domain": "Unvalidated synthetic proposal",
+        "owner": "Training owner",
+        "performance_standard": "Provide an independently justified source for status indication after the shared supply fails; demonstration obligation NORMAL_POWER_LOSS remains open.",
+        "status": "proposed",
+        "type": "preventive"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "CTRL_POWER",
+      "kind": "control",
+      "revision": 1,
+      "state": "draft",
+      "title": "Independent power for status indication"
+    },
+    {
+      "data": {
+        "degradation": "Proposed synthetic barrier. Shared power, maintenance bypass, diagnostic coverage and applicable operating states require engineering review.",
+        "independence_domain": "Unvalidated synthetic operating response",
+        "owner": "Training owner",
+        "performance_standard": "Enter the restricted operating procedure after indication loss; response timing and human-performance evidence remain open.",
+        "status": "proposed",
+        "type": "mitigative"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "CTRL_RESPONSE",
+      "kind": "control",
+      "revision": 1,
+      "state": "draft",
+      "title": "Restricted-operation response"
+    },
+    {
+      "data": {
+        "causes": [
+          "Loss of shared power"
+        ],
+        "consequences": [
+          "Operator lacks current status"
+        ],
+        "examination": "finding",
+        "examination_basis": "Synthetic desk-study finding; no multidisciplinary workshop was performed.",
+        "guideword": "No",
+        "parameter": "status feedback",
+        "recommendations": [
+          "Review independent indication and restricted operation"
+        ],
+        "safeguards": [
+          "Existing safeguards not demonstrated; proposed measures remain separate."
+        ]
+      },
+      "description": "",
+      "id": "DEV_001",
+      "kind": "deviation",
+      "revision": 1,
+      "state": "draft",
+      "title": "No status indication"
+    },
+    {
+      "data": {
+        "conditions": "Fictional indoor station; continuous active operation",
+        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_status": "reviewed_independent",
+        "mean_active_repair_hours": 2,
+        "mode": "normal",
+        "model": "exponential",
+        "rate_per_hour": 8e-05,
+        "source": "Synthetic training fixture, revision 1"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "DOOR",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Platform access controller"
+    },
+    {
+      "data": {
+        "conditions": "Synthetic event boundary at 100 hours; not hardware rates or project defaults",
+        "dependency_review": "Three independent basic-event identities; shared initiator appears in both paths as the same event, not a copied independent occurrence.",
+        "dependency_status": "reviewed_independent",
+        "mission_hours": 100,
+        "mode": "normal",
+        "probability": 0.2,
+        "source": "Invented event probabilities for a shared-event Boolean example"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "EV_A",
+      "kind": "fault_event",
+      "revision": 1,
+      "state": "draft",
+      "title": "Branch A event"
+    },
+    {
+      "data": {
+        "conditions": "Synthetic event boundary at 100 hours; not hardware rates or project defaults",
+        "dependency_review": "Three independent basic-event identities; shared initiator appears in both paths as the same event, not a copied independent occurrence.",
+        "dependency_status": "reviewed_independent",
+        "mission_hours": 100,
+        "mode": "normal",
+        "probability": 0.3,
+        "source": "Invented event probabilities for a shared-event Boolean example"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "EV_B",
+      "kind": "fault_event",
+      "revision": 1,
+      "state": "draft",
+      "title": "Branch B event"
+    },
+    {
+      "data": {
+        "conditions": "Synthetic event boundary at 100 hours; not hardware rates or project defaults",
+        "dependency_review": "Three independent basic-event identities; shared initiator appears in both paths as the same event, not a copied independent occurrence.",
+        "dependency_status": "reviewed_independent",
+        "mission_hours": 100,
+        "mode": "normal",
+        "probability": 0.1,
+        "source": "Invented event probabilities for a shared-event Boolean example"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "EV_SHARED",
+      "kind": "fault_event",
+      "revision": 1,
+      "state": "draft",
+      "title": "Shared initiating event"
+    },
+    {
+      "data": {
+        "causes": [
+          "Incorrect command logic or invalid condition input; synthetic causes to investigate."
+        ],
+        "criticality_basis": "Qualitative consequence review using the invented study matrix; no quantitative criticality or RPN.",
+        "detection": "Planned functional inspection",
+        "failure_mode": "Incorrect release command",
+        "function": "Control platform access under the declared authorized conditions.",
+        "local_effect": "Controller issues a release command without all authorized conditions.",
+        "mode": "normal",
+        "next_effect": "Access interlock may permit release.",
+        "owner": "Synthetic systems team",
+        "recommendations": [
+          "Execute the declared verification"
+        ],
+        "response": "Withhold release and follow the defined restricted operation; response is a proposed design provision.",
+        "severity": "S3 \u2014 invented demonstration class",
+        "source": "synthetic://platform-design-1",
+        "system_effect": "Platform access can be released during an unsafe condition."
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "FM_002",
+      "kind": "failure_mode",
+      "revision": 1,
+      "state": "draft",
+      "title": "Incorrect release command"
+    },
+    {
+      "data": {
+        "causes": [
+          "Loss of one supply or luminaire circuit; synthetic causes to investigate."
+        ],
+        "criticality_basis": "Qualitative consequence review using the invented study matrix; independent-circuit mission probability is a separate RAM model.",
+        "detection": "Planned functional inspection",
+        "failure_mode": "Loss of a lighting circuit",
+        "function": "Provide illumination along the defined evacuation route.",
+        "local_effect": "One lighting circuit stops providing its intended illumination.",
+        "mode": "normal",
+        "next_effect": "The independent circuit is required to maintain the defined illumination.",
+        "owner": "Synthetic systems team",
+        "recommendations": [
+          "Execute the declared verification"
+        ],
+        "response": "Independent circuit is a proposed compensating provision; actual illumination test remains open.",
+        "severity": "S3 \u2014 invented demonstration class",
+        "source": "synthetic://lighting-design-1",
+        "system_effect": "Evacuation illumination is lost if the remaining support also fails."
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "FM_003",
+      "kind": "failure_mode",
+      "revision": 1,
+      "state": "draft",
+      "title": "Loss of a lighting circuit"
+    },
+    {
+      "data": {
+        "logic": "AND",
+        "mode": "normal"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "FT_PATH_A",
+      "kind": "fault_gate",
+      "revision": 1,
+      "state": "draft",
+      "title": "Shared initiator and branch A event"
+    },
+    {
+      "data": {
+        "logic": "AND",
+        "mode": "normal"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "FT_PATH_B",
+      "kind": "fault_gate",
+      "revision": 1,
+      "state": "draft",
+      "title": "Shared initiator and branch B event"
+    },
+    {
+      "data": {
+        "logic": "OR",
+        "mode": "normal"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "FT_TOP",
+      "kind": "fault_gate",
+      "revision": 1,
+      "state": "draft",
+      "title": "Shared initiator with either branch event"
+    },
+    {
+      "data": {},
+      "description": "",
+      "id": "F_CONTROL",
+      "kind": "function",
+      "revision": 1,
+      "state": "draft",
+      "title": "Provide station-control service"
+    },
+    {
+      "data": {
+        "boundary": "Station-control service during normal operation",
+        "decision": {
+          "outcome": "pending"
+        },
+        "initial": {
+          "frequency": "F2",
+          "severity": "S3"
+        },
+        "mode": "normal",
+        "owner": "Training reviewer",
+        "residual": {
+          "frequency": "F1",
+          "severity": "S3"
+        },
+        "severity": "S3"
+      },
+      "description": "Fictional hazard for workflow demonstration; no real railway safety judgment.",
+      "id": "HZ_001",
+      "kind": "hazard",
+      "revision": 1,
+      "state": "draft",
+      "title": "Loss of control indication during normal operation"
+    },
+    {
+      "data": {
+        "boundary": "Platform access during normal station operation",
+        "decision": {
+          "outcome": "pending"
+        },
+        "initial": {
+          "frequency": "F2",
+          "severity": "S3"
+        },
+        "mode": "normal",
+        "owner": "Synthetic systems team",
+        "residual": {
+          "frequency": "F1",
+          "severity": "S3"
+        },
+        "severity": "S3"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "HZ_002",
+      "kind": "hazard",
+      "revision": 1,
+      "state": "draft",
+      "title": "Unintended platform access release"
+    },
+    {
+      "data": {
+        "boundary": "Station lighting during a normal-mode loss-of-supply demand",
+        "decision": {
+          "outcome": "pending"
+        },
+        "initial": {
+          "frequency": "F2",
+          "severity": "S3"
+        },
+        "mode": "normal",
+        "owner": "Synthetic systems team",
+        "residual": {
+          "frequency": "F1",
+          "severity": "S3"
+        },
+        "severity": "S3"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "HZ_003",
+      "kind": "hazard",
+      "revision": 1,
+      "state": "draft",
+      "title": "Emergency lighting unavailable"
+    },
+    {
+      "data": {
+        "assumptions": [
+          "One shared supply represented explicitly in the RBD."
+        ],
+        "from": "PSU",
+        "supplier_boundary": "Synthetic supplier interface",
+        "to": "CH_A, CH_B"
+      },
+      "description": "",
+      "id": "IF_POWER",
+      "kind": "interface",
+      "revision": 1,
+      "state": "draft",
+      "title": "Shared power interface"
+    },
+    {
+      "data": {
+        "conditions": "Fictional indoor station; continuous active operation",
+        "dependency_review": "Two independent active lighting circuits in this fictional model; separate repair resources. No real project independence established.",
+        "dependency_status": "reviewed_independent",
+        "mean_active_repair_hours": 3,
+        "mode": "normal",
+        "model": "exponential",
+        "rate_per_hour": 3e-05,
+        "source": "Synthetic training fixture, revision 1"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "LIGHT_A",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Emergency lighting circuit A"
+    },
+    {
+      "data": {
+        "conditions": "Fictional indoor station; continuous active operation",
+        "dependency_review": "Two independent active lighting circuits in this fictional model; separate repair resources. No real project independence established.",
+        "dependency_status": "reviewed_independent",
+        "mean_active_repair_hours": 3,
+        "mode": "normal",
+        "model": "exponential",
+        "rate_per_hour": 4e-05,
+        "source": "Synthetic training fixture, revision 1"
+      },
+      "description": "Fictional training record; no project acceptance implied.",
+      "id": "LIGHT_B",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Emergency lighting circuit B"
+    },
+    {
+      "data": {},
+      "description": "",
+      "id": "MODE_NORMAL",
+      "kind": "operating_mode",
+      "revision": 1,
+      "state": "draft",
+      "title": "Normal operation"
+    },
+    {
+      "data": {
+        "intent": "Provide current status to operator",
+        "mode": "normal",
+        "participants": [
+          "Training analyst"
+        ],
+        "session": "Synthetic workshop",
+        "source": "synthetic://design-1"
+      },
+      "description": "",
+      "id": "NODE_001",
+      "kind": "study_node",
+      "revision": 1,
+      "state": "draft",
+      "title": "Control indication function"
+    },
+    {
+      "data": {
+        "conditions": "Fictional indoor station; continuous active operation",
+        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_status": "reviewed_independent",
+        "mean_active_repair_hours": 4,
+        "mode": "normal",
+        "model": "exponential",
+        "rate_per_hour": 5e-05,
+        "source": "Synthetic training fixture, revision 1"
+      },
+      "description": "",
+      "id": "PSU",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Shared power supply"
+    },
+    {
+      "data": {
+        "external_id": "SYN-REQ-001",
+        "source_baseline": "1",
+        "source_system": "synthetic",
+        "verification_method": "test"
+      },
+      "description": "The station-control system shall indicate loss of status feedback.",
+      "id": "REQ_001",
+      "kind": "requirement",
+      "revision": 1,
+      "state": "draft",
+      "title": "Detect loss of status indication"
+    },
+    {
+      "data": {
+        "external_id": "SYN-REQ-002",
+        "source_baseline": "1",
+        "source_system": "synthetic",
+        "verification_method": "inspection"
+      },
+      "description": "The operating procedure shall define the response to loss of status indication.",
+      "id": "REQ_002",
+      "kind": "requirement",
+      "revision": 1,
+      "state": "draft",
+      "title": "Define restricted operation after indication loss"
+    },
+    {
+      "data": {
+        "source_baseline": "1",
+        "source_system": "synthetic",
+        "verification_method": "test"
+      },
+      "description": "Permit release only when the authorized conditions are confirmed.",
+      "id": "REQ_002_STUDY",
+      "kind": "requirement",
+      "revision": 1,
+      "state": "draft",
+      "title": "Permit release only when the authorized conditions are confirmed"
+    },
+    {
+      "data": {
+        "source_baseline": "1",
+        "source_system": "synthetic",
+        "verification_method": "test"
+      },
+      "description": "Maintain illumination after one lighting circuit fails.",
+      "id": "REQ_003_STUDY",
+      "kind": "requirement",
+      "revision": 1,
+      "state": "draft",
+      "title": "Maintain illumination after one lighting circuit fails"
+    },
+    {
+      "data": {
+        "obligations": [
+          {
+            "configuration": "Synthetic station concept",
+            "id": "NORMAL_POWER_LOSS",
+            "mode": "normal"
+          }
+        ],
+        "source_baseline": "1",
+        "source_system": "synthetic",
+        "verification_method": "test"
+      },
+      "description": "Fictional methodology example; no actual railway judgment.",
+      "id": "REQ_POWER",
+      "kind": "requirement",
+      "revision": 1,
+      "state": "draft",
+      "title": "Maintain status indication after shared supply loss"
+    },
+    {
+      "data": {},
+      "description": "",
+      "id": "STATION",
+      "kind": "item",
+      "revision": 1,
+      "state": "draft",
+      "title": "Synthetic station control system"
+    },
+    {
+      "data": {
+        "applicability": "Illustrative only, no actual test execution",
+        "artifact": "synthetic://test-001",
+        "artifact_revision": "1",
+        "configuration": "Synthetic baseline 1; normal mode",
+        "result": "pass",
+        "reviewer": "Synthetic reviewer declaration"
+      },
+      "description": "",
+      "id": "VER_001",
+      "kind": "verification",
+      "revision": 1,
+      "state": "draft",
+      "title": "Synthetic loss-of-feedback test"
+    }
+  ],
+  "links": [
+    {
+      "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+      "relation": "addresses",
+      "source": "ACT_001",
+      "target": "DEV_001"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "addresses",
+      "source": "ACT_001",
+      "target": "REQ_002"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "addresses",
+      "source": "ACT_002",
+      "target": "REQ_002_STUDY"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "addresses",
+      "source": "ACT_003",
+      "target": "REQ_003_STUDY"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "causes",
+      "source": "CAUSE_001",
+      "target": "HZ_001"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "causes",
+      "source": "CAUSE_002",
+      "target": "HZ_002"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "causes",
+      "source": "CAUSE_003",
+      "target": "HZ_003"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "instance_of",
+      "source": "CH_A",
+      "target": "CHANNEL_TYPE"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "instance_of",
+      "source": "CH_B",
+      "target": "CHANNEL_TYPE"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "controls",
+      "source": "CTRL_001",
+      "target": "HZ_001"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "controls",
+      "source": "CTRL_002",
+      "target": "HZ_002"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "prevents",
+      "source": "CTRL_002",
+      "target": "CAUSE_002"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "controls",
+      "source": "CTRL_003",
+      "target": "HZ_003"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "prevents",
+      "source": "CTRL_003",
+      "target": "CAUSE_003"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "controls",
+      "source": "CTRL_POWER",
+      "target": "HZ_001"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "prevents",
+      "source": "CTRL_POWER",
+      "target": "CAUSE_001"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "controls",
+      "source": "CTRL_RESPONSE",
+      "target": "HZ_001"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "mitigates",
+      "source": "CTRL_RESPONSE",
+      "target": "CONS_001"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "causes",
+      "source": "DEV_001",
+      "target": "HZ_001"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "deviates",
+      "source": "DEV_001",
+      "target": "NODE_001"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "input_to",
+      "source": "EV_A",
+      "target": "FT_PATH_A"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "input_to",
+      "source": "EV_B",
+      "target": "FT_PATH_B"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "input_to",
+      "source": "EV_SHARED",
+      "target": "FT_PATH_A"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "input_to",
+      "source": "EV_SHARED",
+      "target": "FT_PATH_B"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "applies_to",
+      "source": "FM_002",
+      "target": "DOOR"
+    },
+    {
+      "rationale": "Synthetic erroneous output failure can initiate the platform-access hazard.",
+      "relation": "causes",
+      "source": "FM_002",
+      "target": "HZ_002"
+    },
+    {
+      "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+      "relation": "fails",
+      "source": "FM_002",
+      "target": "DOOR"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "applies_to",
+      "source": "FM_003",
+      "target": "LIGHT_A"
+    },
+    {
+      "rationale": "Synthetic loss of a lighting circuit contributes to loss of emergency illumination.",
+      "relation": "causes",
+      "source": "FM_003",
+      "target": "HZ_003"
+    },
+    {
+      "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+      "relation": "fails",
+      "source": "FM_003",
+      "target": "LIGHT_A"
+    },
+    {
+      "rationale": "Explicit synthetic study allocation; not a claim of engineering adequacy.",
+      "relation": "fails",
+      "source": "FM_003",
+      "target": "LIGHT_B"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "input_to",
+      "source": "FT_PATH_A",
+      "target": "FT_TOP"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "input_to",
+      "source": "FT_PATH_B",
+      "target": "FT_TOP"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "analyzes",
+      "source": "FT_TOP",
+      "target": "HZ_001"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "applies_to",
+      "source": "FT_TOP",
+      "target": "STATION"
+    },
+    {
+      "rationale": "Indication loss is assessed on the shared supply within the control success model.",
+      "relation": "applies_to",
+      "source": "HZ_001",
+      "target": "PSU"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "applies_to",
+      "source": "HZ_001",
+      "target": "STATION"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "causes",
+      "source": "HZ_001",
+      "target": "CONS_001"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "operates_in",
+      "source": "HZ_001",
+      "target": "MODE_NORMAL"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "applies_to",
+      "source": "HZ_002",
+      "target": "DOOR"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "causes",
+      "source": "HZ_002",
+      "target": "CONS_002"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "operates_in",
+      "source": "HZ_002",
+      "target": "MODE_NORMAL"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "applies_to",
+      "source": "HZ_003",
+      "target": "LIGHT_A"
+    },
+    {
+      "rationale": "Emergency lighting hazard applies to both explicitly modelled lighting circuits.",
+      "relation": "applies_to",
+      "source": "HZ_003",
+      "target": "LIGHT_B"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "causes",
+      "source": "HZ_003",
+      "target": "CONS_003"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "operates_in",
+      "source": "HZ_003",
+      "target": "MODE_NORMAL"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "studies",
+      "source": "NODE_001",
+      "target": "F_CONTROL"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "implements",
+      "source": "REQ_001",
+      "target": "CTRL_001"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "implements",
+      "source": "REQ_002",
+      "target": "CTRL_001"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "implements",
+      "source": "REQ_002",
+      "target": "CTRL_RESPONSE"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "implements",
+      "source": "REQ_002_STUDY",
+      "target": "CTRL_002"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "implements",
+      "source": "REQ_003_STUDY",
+      "target": "CTRL_003"
+    },
+    {
+      "rationale": "Synthetic explicit relationship; efficacy and completeness require engineering review.",
+      "relation": "implements",
+      "source": "REQ_POWER",
+      "target": "CTRL_POWER"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "contains",
+      "source": "STATION",
+      "target": "CH_A"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "contains",
+      "source": "STATION",
+      "target": "CH_B"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "contains",
+      "source": "STATION",
+      "target": "DOOR"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "contains",
+      "source": "STATION",
+      "target": "LIGHT_A"
+    },
+    {
+      "rationale": "Declared relationship in the complete synthetic study.",
+      "relation": "contains",
+      "source": "STATION",
+      "target": "LIGHT_B"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "contains",
+      "source": "STATION",
+      "target": "PSU"
+    },
+    {
+      "rationale": "Synthetic training relationship; review applicability.",
+      "relation": "verifies",
+      "source": "VER_001",
+      "target": "REQ_001"
+    }
+  ]
+}
