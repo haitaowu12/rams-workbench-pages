@@ -1,0 +1,10 @@
+{
+  "owner": "tonys-second-brain/resources/tools/unified-visuals",
+  "profile": "unified-engineering/1",
+  "files": {
+    "unified_engineering.py": "4c03f5802405869ca8ecad363330ea8f19b847116d89d68a4e4256840159b853",
+    "engineering-view.js": "a73041757bf1dc3c877e691f876fc14bd16e6381afe48dbd388af7d29d04eedd",
+    "engineering-view.css": "e55a6c4fc27536a7fe4c40dd710b59ea9cfc1e8e4e1b666d4e46cccb93684e7c"
+  },
+  "update": "Run scripts/sync_unified_engineering.py against the explicit consumer checkout; --check verifies byte parity."
+}

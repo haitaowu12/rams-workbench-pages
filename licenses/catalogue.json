@@ -1,0 +1,75 @@
+[
+  {
+    "component": "Pyodide",
+    "source": "https://github.com/pyodide/pyodide",
+    "revision": "72e3c78d53a32a76e0aca7443ad24e5cae1042d3",
+    "files": [
+      "Pyodide/LICENSE",
+      "Pyodide/src/js/vendor/stackframe/LICENSE"
+    ]
+  },
+  {
+    "component": "Expat",
+    "source": "https://github.com/libexpat/libexpat",
+    "revision": "4b3f0b06f39fb5529cead381694f8929901bc273",
+    "files": [
+      "Expat/COPYING"
+    ]
+  },
+  {
+    "component": "CPython",
+    "source": "https://github.com/python/cpython",
+    "revision": "4f8bb3947cfbc20f970ff9d9531e1132a9e95396",
+    "files": [
+      "CPython/LICENSE",
+      "CPython/Doc/license.rst",
+      "CPython/Modules/expat/COPYING"
+    ]
+  },
+  {
+    "component": "Emscripten",
+    "source": "https://github.com/emscripten-core/emscripten",
+    "revision": "bbf1caa6e24f64fca9eb6a13a9e02d3f42123e77",
+    "files": [
+      "Emscripten/LICENSE",
+      "Emscripten/system/lib/compiler-rt/LICENSE.TXT",
+      "Emscripten/system/lib/libc/musl/COPYRIGHT",
+      "Emscripten/system/lib/libcxx/LICENSE.TXT",
+      "Emscripten/system/lib/libcxxabi/LICENSE.TXT",
+      "Emscripten/system/lib/libunwind/LICENSE.TXT",
+      "Emscripten/system/lib/mimalloc/LICENSE"
+    ]
+  },
+  {
+    "component": "libffi",
+    "source": "https://github.com/libffi/libffi",
+    "revision": "f08493d249d2067c8b3207ba46693dd858f95db3",
+    "files": [
+      "libffi/LICENSE"
+    ]
+  },
+  {
+    "component": "hiwire",
+    "source": "https://github.com/pyodide/hiwire",
+    "revision": "6a1e67280a15d929ebeceee54a6358c9c8d5f697",
+    "files": [
+      "hiwire/LICENSE"
+    ]
+  },
+  {
+    "component": "zlib",
+    "source": "https://github.com/madler/zlib",
+    "revision": "51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf",
+    "files": [
+      "zlib/LICENSE"
+    ]
+  },
+  {
+    "component": "bzip2",
+    "source": "https://github.com/emscripten-ports/bzip2",
+    "revision": "60ce9dfe9a75f7ee92956aba8a83d1a37625bc1d",
+    "files": [
+      "bzip2/LICENSE"
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+RAMS Workbench browser runtime
+
+The browser uses Pyodide 0.29.3 (MPL-2.0), CPython 3.13.2 and SQLite.
+The RAMS solvers, repository and request service are the same source modules
+used by the local application. Projects are processed on the device.
+
+Pyodide source: https://github.com/pyodide/pyodide
+CPython source: https://github.com/python/cpython/tree/v3.13.2
+SQLite public-domain statement: https://www.sqlite.org/copyright.html
+Runtime/package versions and the verified SQLite wheel hash are retained in
+pyodide/runtime-provenance.json. License texts for Pyodide, CPython,
+Emscripten, Expat, bzip2, hiwire, libffi and zlib are under licenses/.

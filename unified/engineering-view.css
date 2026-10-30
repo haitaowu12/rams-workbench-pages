@@ -1,0 +1,28 @@
+/* Portable engineering canvas. Host apps own their forms and surrounding layout. */
+.engineering-diagram {
+  position: relative;
+  overflow: auto;
+  border: 1px solid var(--line, #cbd5de);
+  border-radius: 6px;
+  background: #fff;
+  margin: 18px 0;
+  max-height: 650px;
+  overscroll-behavior: contain;
+}
+.engineering-diagram svg { display: block; width: 100%; min-width: 0; height: auto; max-width: none; max-height: var(--engineering-fit-height, 640px); }
+.engineering-diagram svg[style*="width:"] { max-height: none; }
+.engineering-diagram [role="button"] { cursor: pointer; }
+.engineering-diagram:focus-visible { outline: 3px solid #bc7e14; outline-offset: 2px; }
+.engineering-diagram [data-select]:focus { outline: none; }
+.engineering-diagram [data-select]:focus > rect,
+.engineering-diagram [data-select]:focus > g > rect:first-of-type,
+.engineering-diagram .diagram-selected > rect:first-of-type,
+.engineering-diagram .diagram-selected > g > rect:first-of-type { stroke: #91600d; stroke-width: 2.5px; }
+.engineering-diagram .diagram-related { stroke: #176a76; stroke-width: 2.7px; }
+.diagram-tools { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.diagram-tools output { font: 11px ui-monospace, monospace; min-width: 38px; text-align: center; color: var(--muted, #506474); }
+.diagram-tools button[aria-label] { min-width: 32px; font-size: 17px; padding: 5px 9px; }
+@media (max-width: 760px) {
+  .engineering-diagram { max-height: 500px; }
+  .engineering-diagram svg { max-height: min(460px, var(--engineering-fit-height, 640px)); }
+}
