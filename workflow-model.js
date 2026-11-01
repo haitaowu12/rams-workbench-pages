@@ -43,3 +43,50 @@ export function mergeDraft(base, local, remote, choices = {}) {
   }
   return {merged: visit(base,local,remote,[]), conflicts};
 }
+
+// An editing aid, not a substitute for the server's complete solver admission.
+export function ramInputChecklist(records, config) {
+  const byId = new Map(records.map(r => [r.id,r])), leaves = [];
+  function walk(n, depth=0) {
+    if (!n || depth>24) return;
+    if (Object.hasOwn(n,'item')) leaves.push(n.item);
+    else if (Array.isArray(n.children)) n.children.forEach(c=>walk(c,depth+1));
+  }
+  walk(config.tree);
+  const occurrences = new Map();
+  for (const id of leaves) occurrences.set(id,(occurrences.get(id)||0)+1);
+  const positive = n => typeof n === 'number' && Number.isFinite(n) && n > 0;
+  return [...new Set(leaves)].map(id => {
+    const r = byId.get(id), d = r?.data || {}, issues = [];
+    if (!r || r.state === 'archived' || r.kind !== 'item') issues.push('Select an active equipment item.');
+    else {
+      if (d.model !== 'exponential') issues.push('Select the exponential component model.');
+      if (!positive(d.rate_per_hour)) issues.push('Enter a positive failure rate [1/h].');
+      if (!positive(d.mean_active_repair_hours)) issues.push('Enter a positive mean active repair time [h].');
+      if (!d.mode || d.mode !== config.mode) issues.push('Match the study operating mode.');
+      if (!String(d.source || '').trim()) issues.push('Record the data source / revision.');
+      if (!String(d.conditions || '').trim()) issues.push('State the applicable conditions.');
+      if (d.dependency_status !== 'reviewed_independent' || !String(d.dependency_review || '').trim()) issues.push('Record the component dependency review and rationale.');
+    }
+    if (occurrences.get(id)>1) issues.push('This physical instance appears more than once in the success model.');
+    return {id, title:r?.title || 'Unselected component', issues};
+  });
+}
+
+
+// A projection of declared relationships, never an acceptance calculation.
+export function hazardTrace(snapshot, hazardId) {
+  const records = new Map(snapshot.entities.filter(r => r.state !== 'archived').map(r => [r.id,r]));
+  const hazard = records.get(hazardId);
+  if (!hazard || hazard.kind !== 'hazard') return null;
+  const linked = (target, relation, kind) => [...new Set(snapshot.links.filter(l => l.target === target && l.relation === relation).map(l => l.source))].map(id => records.get(id)).filter(r => r && r.kind === kind);
+  const controls = linked(hazardId,'controls','control');
+  const requirements = new Map();
+  for (const control of controls) for (const req of linked(control.id,'implements','requirement')) {
+    if (!requirements.has(req.id)) requirements.set(req.id,{record:req,controls:[],verifications:linked(req.id,'verifies','verification'),coverage:(snapshot.requirement_coverage || []).filter(c => c.requirement === req.id)});
+    requirements.get(req.id).controls.push(control.id);
+  }
+  const targetIds = new Set([hazardId,...controls.map(c=>c.id),...requirements.keys()]);
+  const actions = snapshot.entities.filter(r => r.kind === 'action' && r.state !== 'archived' && !String(r.data?.completion_evidence || '').trim() && snapshot.links.some(l => l.source === r.id && l.relation === 'addresses' && targetIds.has(l.target)));
+  return {hazard,controls,requirements:[...requirements.values()],actions,coverage:(snapshot.coverage || []).find(c=>c.hazard === hazardId)};
+}

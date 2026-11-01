@@ -1,0 +1,148 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.942
+Welcome to RAMS Workbench. This guided example uses fictional station data and a computer-generated voice.
+
+00:00:06.942 --> 00:00:14.897
+Open the browser workbench and wait for the analysis engine. Applied changes are saved on this device, under this site's address.
+
+00:00:14.897 --> 00:00:23.814
+Check the saving banner. If it says tab only, download a workspace backup before closing. An open editor is still a draft until you save it.
+
+00:00:23.814 --> 00:00:32.400
+Choose Explore the station example to create an editable demonstration study. For your own work, choose New project from the Project menu.
+
+00:00:32.400 --> 00:00:43.253
+The study workspace brings hazards, actions and retained analyses together. Choose a hazard row to continue its review, or a retained analysis to inspect its exact basis.
+
+00:00:43.253 --> 00:00:48.461
+These counts describe recorded work. They are not a completeness or acceptance score.
+
+00:00:48.461 --> 00:00:57.461
+In Study definition, record the system boundary, configuration, operating context, governing references and acceptance process.
+
+00:00:57.461 --> 00:01:08.794
+Define operating modes consistently. If you use a risk matrix, enter its source and classes, update the matrix grid, fill the applicable categories, and save the setup.
+
+00:01:08.794 --> 00:01:16.044
+Missing criteria remain unassessed. The example's invented risk categories are not railway acceptance defaults.
+
+00:01:16.044 --> 00:01:25.127
+Open System and functions for equipment, functions, interfaces and operating modes. Add each physical instance with a distinct stable ID.
+
+00:01:25.127 --> 00:01:32.075
+Inspect an equipment item to add children, allocate a function, or open its failure analysis worksheet.
+
+00:01:32.075 --> 00:01:40.001
+Containment describes the physical system. A reliability success model and a hazard's causal relationships are defined separately.
+
+00:01:40.001 --> 00:01:47.118
+Select a hazard in Hazard review. Its assessment, boundary and local decision stay above the requirement board.
+
+00:01:47.118 --> 00:01:57.980
+Each requirement appears once, beside its implementing controls, verification applicability and next action. Select a control to see every requirement row it affects.
+
+00:01:57.980 --> 00:02:08.564
+Without verification finds missing declarations. A declared pass can still have an open obligation or undefined scope, so read the applicability as well as the result.
+
+00:02:08.564 --> 00:02:19.230
+Choose Add verification on the relevant requirement. The editor retains the relationship and prefills the available mode, configuration, obligation and requirement revision.
+
+00:02:19.230 --> 00:02:31.397
+Enter a title, artifact details, applicability and reviewer declaration. An unexecuted plan stays not run. Define the requirement's explicit obligations before claiming coverage.
+
+00:02:31.397 --> 00:02:40.480
+Save the record, inspect the saved declaration, then return to the board. Saving a plan does not satisfy its obligation or accept the hazard.
+
+00:02:40.480 --> 00:02:51.064
+In the HAZOP worksheet, create a study node with its intent and operating context. Add an examination, select its study node, and record the parameter and guide word.
+
+00:02:51.064 --> 00:03:02.397
+Describe causes, consequences, safeguards and recommendations. Choose a finding, no issue, deferred, or not applicable disposition, with an appropriate rationale.
+
+00:03:02.397 --> 00:03:09.064
+Follow a finding into a linked hazard or action. A blank examination is not a completed no-issue review.
+
+00:03:09.064 --> 00:03:16.230
+The failure modes worksheet can be opened directly or from an equipment record. Select the equipment and add a failure mode.
+
+00:03:16.230 --> 00:03:24.828
+Keep function and causes, local effects, next-level effects, end effects, detection and compensating provisions distinct.
+
+00:03:24.828 --> 00:03:36.925
+Select the row to edit, link an existing hazard, create a linked hazard, or assign follow-up work. Criticality notes record your assessment; they do not calculate a risk-priority number.
+
+00:03:36.925 --> 00:03:47.112
+In Bow tie, select a hazard and inspect its causes, consequences and control allocations. Reuse an existing control when it is the same engineered provision.
+
+00:03:47.112 --> 00:03:55.802
+Allocate preventive barriers before the hazard and mitigative barriers after it. Controls awaiting path allocation remain visible below the drawing.
+
+00:03:55.802 --> 00:04:06.552
+Select a node to inspect its record. Use the zoom controls, vector download or Source JSON as needed. Placement does not establish barrier effectiveness or independence.
+
+00:04:06.552 --> 00:04:13.886
+Build a static fault tree with AND and OR gates. Reuse a basic-event ID when the same event occurs in more than one branch.
+
+00:04:13.886 --> 00:04:25.925
+Set the mode and mission horizon. Quantitative analysis needs event probabilities and an independence basis. Check inputs validates without saving a run; Analyze and retain run freezes the result.
+
+00:04:25.925 --> 00:04:36.938
+The example gives zero point zero four four. Its overlapping cut sets must not be added as mutually exclusive probabilities. Dynamic and dependent models need other methods.
+
+00:04:36.938 --> 00:04:46.271
+In RAM, define success, mode, mission hours and the repair target. Build series or active-parallel groups using distinct physical instances.
+
+00:04:46.271 --> 00:04:59.271
+Resolve the component-input checklist. Rates, active repair times, mode, source, conditions and dependency review are required. Check inputs refuses an invalid basis and keeps the draft editable.
+
+00:04:59.271 --> 00:05:08.707
+Calculate and retain run validates again. Read mission reliability, inherent availability and component repair-time probability as separate quantities.
+
+00:05:08.707 --> 00:05:21.993
+Retained runs keep their original snapshots. Use importance and sensitivity on a supported run to inspect conditional model drivers. Unsupported standby, shared repair or operational availability are not inferred.
+
+00:05:21.993 --> 00:05:31.826
+The action register keeps owners, due dates, status and engineering links together. Use its filters to find overdue, unassigned or completed work.
+
+00:05:31.826 --> 00:05:41.160
+Choose Record completion and retain completion evidence or a controlled reference. This is a separate record from verification coverage and hazard acceptance.
+
+00:05:41.160 --> 00:05:49.776
+Use Review and trace to inspect technical findings, relationships and change effects. Follow a finding to the record that needs attention.
+
+00:05:49.776 --> 00:05:56.776
+If another tab saves first, a stale write is refused and your draft stays open. Choose Compare latest revision.
+
+00:05:56.776 --> 00:06:05.942
+Review both values for each conflicting field, choose the value to keep, then save the combined record. Changes to different fields can be combined.
+
+00:06:05.942 --> 00:06:14.276
+Download my draft provides a separate copy before leaving the editor. After an interruption, check the saved outcome before repeating a write.
+
+00:06:14.276 --> 00:06:24.109
+Technical review checks recorded content and relationships. An empty findings list does not establish engineering adequacy or complete hazard identification.
+
+00:06:24.109 --> 00:06:34.462
+Traceability and change review help you follow the affected records. Local hazard decisions still need their own authority, date, rationale and evidence declaration.
+
+00:06:34.462 --> 00:06:43.465
+In Baselines and history, freeze a named revision and compare it with working content. A frozen snapshot preserves the study; it does not approve it.
+
+00:06:43.465 --> 00:06:53.637
+Use Download study for a portable read-only review. Download full archive adds project JSON, registers, history, baselines, runs and drawings.
+
+00:06:53.637 --> 00:07:00.970
+Import project previews JSON and creates a new study identity. It does not reconstruct the whole database history.
+
+00:07:00.970 --> 00:07:11.054
+Back up workspace preserves all studies and their history. Keep that recovery file outside site storage, especially before changing devices or clearing browser data.
+
+00:07:11.054 --> 00:07:20.054
+Restore workspace backup inspects a recovery file and shows its study and record counts before replacement. Confirm only after checking that preview.
+
+00:07:20.054 --> 00:07:27.593
+Download previous workspace recovers the immediately preceding workspace. Keep independent backups for older versions.
+
+00:07:27.593 --> 00:07:38.109
+The User guide contains the full procedures, feature map, local-app instructions and method boundaries. Use it alongside the workbench as you develop and review your own study.

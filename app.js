@@ -1,8 +1,10 @@
 import "./unified/engineering-view.js";
-import { actionState, sortedActions, mergeDraft } from "./workflow-model.js";
+import { actionState, sortedActions, mergeDraft, ramInputChecklist, hazardTrace } from "./workflow-model.js";
 import { request, browserRuntime, runtimeReady, uiStorage } from "./transport.js";
 const portable = document.getElementById("study-data") ? JSON.parse(document.getElementById("study-data").textContent) : null;
 if (portable) document.body.classList.add("snapshot-mode");
+let reviewFocus = "", reviewFilter = "all", editorDocked = false, reviewOpenerId = "";
+let contextTrail = [], contextOpener = null, lastRenderKey = "";
 let actionFilter = "open", actionOwner = "", evidenceView = "coverage", coverageFilter = "all", editorRevision = null, pendingDraft = null, conflictContext = null;
 const localDay = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
 let studyRecords = {runs: [], baselines: [], history: []}, ramEditing = false, restoringRoute = false;
@@ -117,7 +119,7 @@ async function projectList(id) {
   const counts=new Map();for(const p of all)counts.set(p.title,(counts.get(p.title)||0)+1);
   $("#projects").innerHTML =
     (portable ? "" : option("", "Select a project")) +
-    all.map((p) => option(p.id,counts.get(p.title)>1?`${p.title} · r${p.revision} · ${p.id.slice(-6)}`:p.title,id)).join("");
+    all.map((p) => `<option value="${esc(p.id)}" data-project-title="${esc(p.title)}" ${p.id===id?'selected':''}>${esc(counts.get(p.title)>1?`${p.title} · r${p.revision} · ${p.id.slice(-6)}`:p.title)}</option>`).join("");
 }
 function defaultAnalysis() {
   return {
@@ -158,9 +160,17 @@ async function load(id, fresh = false) {
     recordsById = new Map(snapshot.entities.map((e) => [e.id, e]));
     uiStorage.setItem("rams-project", id);
     $("#projects").value = id;
+    const projectOption = $("#projects").selectedOptions[0];
+    if (projectOption) {
+      projectOption.dataset.projectTitle = snapshot.project.title;
+      const duplicate = [...$("#projects").options].some(o => o.value !== id && o.dataset.projectTitle === snapshot.project.title);
+      projectOption.textContent = duplicate ? `${snapshot.project.title} · r${snapshot.project.revision} · ${id.slice(-6)}` : snapshot.project.title;
+    }
     $("#projects").title=snapshot.project.title+" · "+snapshot.project.id;
     $("#revision").textContent = `Revision ${snapshot.project.revision}`;
     if (fresh) {
+      reviewFocus = ""; reviewFilter = "all";
+      if ($("#recordContext").open) $("#recordContext").close();
       view = "overview";
       actionFilter = "open"; actionOwner = ""; evidenceView = "coverage"; coverageFilter = "all";
       ramEditing = false;
@@ -289,15 +299,29 @@ function renderTree() {
     : "Physical containment is separate from analysis topology.";
 }
 function render() {
-  document.querySelectorAll(".app-nav [data-view]").forEach((b) => {
-    const active = b.dataset.view === view || (view === "studies" && b.dataset.view === "hazards") || (view === "baselines" && b.dataset.view === "review");
+  const key = `${snapshot?.project.id}:${view}:${view === "studies" ? method : ""}`;
+  const positions = key === lastRenderKey ? ["#content","#inspector"].map(selector => ({selector,top:$(selector).scrollTop,left:$(selector).scrollLeft})) : [];
+  lastRenderKey = key;
+  document.body.dataset.view = view;
+  let lineage = snapshot;
+  let synthetic = false;
+  while (lineage?.project) {
+    synthetic ||= ['SYNTHETIC_STATION','SYNTHETIC_COMPLETE_STATION'].includes(lineage.project.id);
+    lineage = lineage.project.config?.import_lineage;
+  }
+  $("#studyProvenance").hidden = !synthetic;
+  document.querySelectorAll(".app-nav button").forEach((b) => {
+    const active = b.dataset.method ? view === "studies" && method === b.dataset.method : b.hasAttribute("data-library") ? view === "evidence" && evidenceView === "records" : b.dataset.view === view && !(view === "evidence" && evidenceView === "records");
+    b.disabled = !snapshot;
     b.classList.toggle("active", active);
     b.setAttribute("aria-current", active ? "page" : "false");
   });
   $("#workspace").classList.toggle(
     "wide",
-    ["overview", "review", "actions", "ram", "baselines", "setup", "practice", "studies"].includes(view) || (view === "evidence" && evidenceView === "coverage"),
+    ["overview", "hazards", "review", "actions", "ram", "baselines", "setup", "practice", "studies"].includes(view) || (view === "evidence" && evidenceView === "coverage"),
   );
+  $("#workspace").classList.toggle("board-workspace", view === "hazards");
+  if (view !== "hazards") { $("#reviewDock").hidden = true; $("#workspace").classList.remove("dock-open"); document.body.classList.remove("detail-open"); }
   $("#inspector").innerHTML = "";
   if (!snapshot) {
     $(".scope-menu").hidden = true;
@@ -322,6 +346,7 @@ function render() {
   );
   $("#scopeLabel").textContent = "Scope: " + (scope ? byId(scope)?.title : "all systems");
   $(".scope-menu").hidden = ["overview", "ram", "actions", "review", "baselines", "setup", "practice"].includes(view);
+  if (view === "system" || view === "requirements") renderDomainRegister();
   if (view === "overview") renderOverview();
   if (view === "review") renderReview().catch(e => notice(e.message));
   if (view === "actions") renderActions();
@@ -332,8 +357,10 @@ function render() {
   if (view === "baselines") renderBaselines().catch((e) => notice(e.message));
   if (view === "setup") renderSetup();
   if (view === "practice") renderPractice();
-  if (view === "hazards" || (view === "evidence" && evidenceView === "records")) renderInspector();
+  if (["system", "requirements"].includes(view) || (view === "evidence" && evidenceView === "records")) renderInspector();
+  if ($("#recordContext").open) renderContext();
   writeRoute();
+  positions.forEach(p => { $(p.selector).scrollTop = p.top; $(p.selector).scrollLeft = p.left; });
 }
 function head(title, action = "") {
   return `<div class="page-head"><div><h1>${esc(title)}</h1>${scope && !["actions","review","ram","baselines","setup"].includes(view) ? `<p>${esc(byId(scope)?.title)}</p>` : ""}</div>${action}</div>`;
@@ -376,34 +403,50 @@ function rememberUI() {
       }),
     );
 }
+function reviewLink(id, label = id) {
+  return `<button class="link record-id" data-review-record="${esc(id)}">${esc(label)}</button>`;
+}
 function renderHazards() {
   rememberUI();
-  const all = matching("hazard");
-  const data = all.filter(
-    (e) =>
-      filter !== "attention" ||
-      attention(snapshot.coverage.find((c) => c.hazard === e.id)),
-  );
-  const p = paginate(data);
-  $("#content").innerHTML =
-    `<div class="subnav"><button class="active" data-view="hazards">Hazards</button><button data-method="hazop">HAZOP</button><button data-method="fmeca">FMECA</button><button data-method="bowtie">Bow tie</button><button data-method="fta">Fault trees</button></div><div class="page-head hazard-head"><h1>Hazards (${all.length})</h1><input id="search" type="search" aria-label="Search records" placeholder="Search hazards" value="${esc(query)}"></div><div class="segmented"><button data-filter="all" class="${filter === "all" ? "active" : ""}">All ${all.length}</button><button data-filter="attention" class="${filter === "attention" ? "active" : ""}">Needs attention ${all.filter((e) => attention(snapshot.coverage.find((c) => c.hazard === e.id))).length}</button><button class="primary add-hazard" data-add="hazard">Add hazard</button></div>${table(
-      ["ID / hazard", "State", "Residual risk", "Criterion"],
-      p.items.map((e) => {
-        const c = snapshot.coverage.find((c) => c.hazard === e.id);
-        return row(
-          [
-            `${link(e.id)}<span class="title">${esc(e.title)}</span><span class="mobile-state">${badge(e.state)}</span>`,
-            badge(e.state),
-            `${esc(e.data.residual?.severity || "—")} / ${esc(e.data.residual?.frequency || "—")}`,
-            badge(c?.residual_risk || "unassessed", "warn"),
-          ],
-          e.id === selected,
-        );
-      }),
-      "hazard-table",
-    )}${p.html}`;
+  const ids = scoped(), hazards = activeRecords("hazard").filter(h => ids.has(h.id));
+  if (!hazards.some(h => h.id === selected)) selected = hazards[0]?.id || "";
+  const trace = hazardTrace(snapshot, selected);
+  if (!trace) {
+    $("#content").innerHTML = head("Hazard review", '<button class="primary" data-add="hazard">Add hazard</button>') + '<div class="empty-workflow"><h2>No hazards in this scope</h2><p>Select another system or record the first hazard for this study.</p></div>';
+    reviewFocus = ""; renderReviewDock(); return;
+  }
+  const h = trace.hazard, c = trace.coverage;
+  const missing = trace.requirements.filter(r => !r.verifications.length);
+  const rows = trace.requirements.filter(r => (reviewFilter !== "missing" || !r.verifications.length) && `${r.record.id} ${r.record.title} ${r.controls.map(id=>byId(id)?.title).join(" ")} ${r.controls.join(" ")}`.toLowerCase().includes(query.toLowerCase()));
+  $("#content").innerHTML = `<nav class="hazard-switcher" aria-label="Study hazards">${hazards.map(r=>`<button class="hazard-choice ${r.id===selected?'active':''}" data-review-hazard="${esc(r.id)}" aria-pressed="${r.id===selected}"><span class="record-id">${esc(r.id)}</span><strong>${esc(r.title)}</strong></button>`).join('')}</nav>
+    <section class="hazard-banner" aria-label="Selected hazard assessment"><div class="section-head"><div><p class="eyebrow">${esc(h.id)} · revision ${h.revision}</p><h1>${esc(h.title)}</h1></div><div class="buttons"><button data-add="hazard">Add hazard</button><button data-review-record="${esc(h.id)}">Inspect hazard</button><button data-method="bowtie">Bow tie →</button></div></div><div class="risk-strip"><span><small>Initial</small><strong>${esc(h.data.initial?.severity || '—')} / ${esc(h.data.initial?.frequency || '—')}</strong></span><span><small>Residual</small><strong>${esc(h.data.residual?.severity || '—')} / ${esc(h.data.residual?.frequency || '—')}</strong></span><span><small>Criterion</small>${badge(c?.residual_risk || 'unassessed','warn')}</span><span><small>Local decision</small><strong>${esc(c?.decision || 'pending')}</strong>${c?.decision_needs_review?badge('Review applicability','warn'):''}</span></div><p class="hazard-boundary"><strong>${esc(h.data.mode || 'Mode unspecified')}</strong> · ${esc(h.data.boundary || 'Boundary unspecified')}</p></section>
+    <div class="board-toolbar"><div class="board-tabs" role="group" aria-label="Requirement filter"><button data-review-filter="all" aria-pressed="${reviewFilter==='all'}" class="${reviewFilter==='all'?'active':''}">All requirements <span>${trace.requirements.length}</span></button><button data-review-filter="missing" aria-pressed="${reviewFilter==='missing'}" class="${reviewFilter==='missing'?'active':''}">Without verification <span>${missing.length}</span></button></div><input id="search" type="search" aria-label="Search requirements or controls" placeholder="Search requirements or controls" value="${esc(query)}"></div>
+    <section class="obligation-board" aria-label="Hazard requirement trace"><div class="obligation-labels" aria-hidden="true"><span>Requirement / implementing controls</span><span>Verification & applicability</span><span>Next action</span></div>${rows.map(r=>{
+      const req=r.record, scopeRows=r.coverage.filter(v=>v.obligation);
+      return `<article class="obligation-row ${reviewFocus===req.id || r.verifications.some(v=>v.id===reviewFocus) || r.controls.includes(reviewFocus)?'selected':''}" data-trace-requirement="${esc(req.id)}"><div class="requirement-cell">${reviewLink(req.id)}<h3><button class="record-title" data-review-record="${esc(req.id)}">${esc(req.title)}</button></h3><div class="control-links">${r.controls.map(id=>`<span>${reviewLink(id)} <span>${esc(byId(id)?.title)}</span></span>`).join('')}${r.controls.length>1?'<small class="shared-label">Shared requirement</small>':''}</div></div><div class="evidence-cell">${r.verifications.length?r.verifications.map(v=>`<div>${reviewLink(v.id)} ${badge('declared '+(v.data.result || 'not run'),v.data.result==='pass'?'good':'warn')}<p>${esc(v.title)}</p><p class="applicability">${esc(v.data.applicability || 'Applicability not recorded')}</p></div>`).join(''):'<p class="evidence-gap"><span aria-hidden="true">○</span> No verification linked</p>'}${scopeRows.map(v=>`<p class="obligation-scope"><span class="record-id">${esc(v.obligation.id)}</span><br>${esc(v.obligation.mode)} · ${esc(v.obligation.configuration)}<br>${badge(v.status==='covered'?'Passing declaration':'Open obligation',v.status==='covered'?'good':'warn')}</p>`).join('')}${!scopeRows.length?'<p class="scope-note-inline">No explicit mode/configuration obligations</p>':''}</div><div class="row-actions">${!r.verifications.length?`<button class="primary" data-review-create="${esc(req.id)}">Add verification</button>`:`<button data-review-record="${esc(r.verifications[0].id)}">Inspect declaration</button>`}<button class="text-action" data-review-edit="${esc(req.id)}">${scopeRows.length?'Edit requirement':'Define obligations'}</button></div></article>`;
+    }).join('') || `<div class="board-empty"><h3>${query?'No matching requirements':'No requirements in this view'}</h3><p>${query?'Try another ID or title, or clear the search.':'Link requirements to this hazard’s controls to develop its trace.'}</p>${query?'<button id="clearReviewSearch">Clear search</button>':`<button data-review-record="${esc(h.id)}">Inspect hazard controls</button>`}</div>`}</section>
+    <section class="review-actions"><div class="section-head"><h2>Follow-up actions <span class="board-count">${trace.actions.length}</span></h2><button data-related="action" data-target="${esc(h.id)}" data-relation="addresses">Add action</button></div>${trace.actions.map(a=>`<div class="next-action"><div>${reviewLink(a.id)}<p>${esc(a.title)}</p><small>Owner: ${esc(a.data.owner || 'Unassigned')} · Due: ${esc(a.data.due || 'Not scheduled')}</small></div><button data-review-edit="${esc(a.id)}">Edit action</button></div>`).join('') || '<p class="muted">No open follow-up actions linked to this hazard.</p>'}</section>`;
+  renderReviewDock();
 }
-function evidenceTabs() { return `<div class="subnav"><button data-evidence-view="coverage" class="${evidenceView === "coverage" ? "active" : ""}">Verification coverage</button><button data-evidence-view="records" class="${evidenceView === "records" ? "active" : ""}">Record library</button></div>`; }
+function renderReviewDock() {
+  const dock = $("#reviewDock"), record = byId(reviewFocus);
+  const open = view === 'hazards' && (editorDocked || (!!record && record.state !== 'archived'));
+  dock.hidden = !open; $("#workspace").classList.toggle('dock-open',open); document.body.classList.toggle('detail-open',open);
+  if (!open || editorDocked) return;
+  dock.classList.remove('editing');
+  $("#reviewDetail").innerHTML = `<div class="review-dock-head"><span class="record-id">${esc(selected)} / ${esc(record.id)}</span><button id="closeReviewDetail">Back to board</button></div><div id="reviewRecordBody"></div>`;
+  renderInspector(record.id, '#reviewRecordBody');
+  $("#reviewRecordBody").querySelectorAll('[data-select]').forEach(b=>{b.dataset.reviewRecord=b.dataset.select;b.removeAttribute('data-select');});
+}
+function openReviewRecord(id, focus = true) {
+  if (!byId(id)) return;
+  reviewFocus = id; reviewOpenerId = id;
+  renderHazards(); writeRoute();
+  if (focus) $("#closeReviewDetail")?.focus({preventScroll:true});
+}
+
+function evidenceTabs() { return ""; }
+
 function renderRegister() {
   rememberUI();
   const all = matching(kind);
@@ -459,19 +502,20 @@ function requirementCard(r) {
     .filter((g) => g.startsWith(r.id + "/"));
   return `<div class="trace-row"><div class="requirement-info">${link(r.id)}<p class="title">${esc(r.title)}</p></div><div class="requirement-status">${vs.length ? vs.map((v) => `<p>${link(v.id)}<br>${badge(`declared ${v.data.result || "not run"}`, v.data.result === "pass" ? "good" : "warn")}</p>`).join("") : badge("Missing verification", "warn")}</div><div class="actions"><button data-related="verification" data-target="${esc(r.id)}" data-relation="verifies">Add verification</button></div>${gaps.length ? `<p class="requirement-gap muted error">${esc([...new Set(gaps)].join("; "))}</p>` : ""}</div>`;
 }
-function renderInspector() {
-  const e = byId(selected);
+function renderInspector(recordId = selected, target = "#inspector") {
+  const e = byId(recordId);
   if (!e) {
-    $("#inspector").innerHTML =
+    $(target).innerHTML =
       '<p class="empty">Select a record to inspect its assessment and links.</p>';
     return;
   }
-  let body = `<div class="inspector-head"><div>${e.kind !== "hazard" ? `<p class="eyebrow">${esc(nice(e.kind))} · revision ${e.revision}</p>` : ""}<h2>${esc(e.id)}${e.kind === "hazard" ? ` <small class="object-revision">r${e.revision}</small>` : ""}</h2>${selectionHistory.length ? '<button class="link" id="backRecord">Back to previous record</button>' : ""}</div><button data-edit="${esc(e.id)}">Edit</button></div><p class="inspector-title">${esc(e.title)}</p>`;
+  let body = `<div class="inspector-head"><div>${e.kind !== "hazard" ? `<p class="eyebrow">${esc(nice(e.kind))} · revision ${e.revision}</p>` : ""}<h2>${esc(e.id)}${e.kind === "hazard" ? ` <small class="object-revision">r${e.revision}</small>` : ""}</h2></div><button data-edit="${esc(e.id)}">Edit</button></div><p class="inspector-title">${esc(e.title)}</p>`;
   if (e.kind === "hazard") {
     const c = snapshot.coverage.find((c) => c.hazard === e.id);
     const relatedRuns = studyRecords.runs.filter(r => r.method !== "static_fta" && hazardsForRun(r).some(h => h.id === e.id));
-    if (relatedRuns.length) body += `<section class="detail-section"><h3>RAM studies sharing equipment</h3>${relatedRuns.map(runButton).join(" · ")}</section>`;
-    body += `<div class="buttons"><button data-method="bowtie">View bow tie</button></div><dl class="facts"><div><dt>Operating mode</dt><dd>${esc(e.data.mode || "Unspecified")}</dd></div><div><dt>System boundary</dt><dd>${esc(e.data.boundary || "Unspecified")}</dd></div></dl><section class="detail-section"><h3>Risk assessment</h3><dl class="risk">${["initial", "residual"].map((s) => `<div><dt>${s === "initial" ? "Initial" : "Residual"} risk</dt><dd><strong>${esc(e.data[s]?.severity || "—")} / ${esc(e.data[s]?.frequency || "—")}</strong>${badge(c?.[`${s}_risk`] || "unassessed", "warn")}</dd></div>`).join("")}</dl></section><section class="detail-section"><div class="section-head"><h3>Decision ${badge(c?.decision || "pending")}</h3><button data-decision="${esc(e.id)}">Record decision</button></div>${c?.decision_needs_review ? `<p>${badge("Applicability review required", "warn")}</p>` : ""}${e.data.decision?.rationale ? `<p class="muted">${esc(e.data.decision.rationale)}</p>` : ""}</section><section class="detail-section"><div class="section-head"><h3>Requirements (${c?.requirements.length || 0})</h3><button data-related="control" data-target="${esc(e.id)}" data-relation="controls">Add control</button></div>${(c?.requirements || []).map((id) => requirementCard(byId(id))).join("") || '<p class="muted">No implementing requirements linked.</p>'}<details class="control-links"><summary>Controls (${c?.controls.length || 0})</summary>${(c?.controls || []).map((id) => `<div class="record-row">${link(id)} · ${esc(byId(id).title)}<p><button data-related="requirement" data-target="${esc(id)}" data-relation="implements">Add requirement</button></p></div>`).join("")}</details></section>${c?.gaps.length ? `<details><summary>Coverage gaps (${c.gaps.length})</summary><ul class="muted">${c.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></details>` : ""}`;
+    body += `<p class="hazard-state">Decision ${badge(c?.decision || "pending")}${c?.decision_needs_review ? badge("Review applicability","warn") : ""}</p>`;
+    body += `<div class="buttons"><button data-method="bowtie">View bow tie</button></div><dl class="facts"><div><dt>Operating mode</dt><dd>${esc(e.data.mode || "Unspecified")}</dd></div><div><dt>System boundary</dt><dd>${esc(e.data.boundary || "Unspecified")}</dd></div></dl><section class="detail-section"><h3>Risk assessment</h3><dl class="risk">${["initial", "residual"].map((s) => `<div><dt>${s === "initial" ? "Initial" : "Residual"} risk</dt><dd><strong>${esc(e.data[s]?.severity || "—")} / ${esc(e.data[s]?.frequency || "—")}</strong>${badge(c?.[`${s}_risk`] || "unassessed", "warn")}</dd></div>`).join("")}</dl></section><section class="detail-section"><div class="section-head"><h3>Controls & requirements</h3><button data-related="control" data-target="${esc(e.id)}" data-relation="controls">Add control</button></div><p><button data-typed-link="${esc(e.id)}" data-link-kind="control" data-relation="controls">Link existing control</button></p>${(c?.controls || []).map(id => { const ctl = byId(id); return `<div class="control-thread"><h4>${link(id)} · ${esc(ctl.title)}</h4>${incoming(id, "implements").filter(r => r.kind === "requirement").map(requirementCard).join("") || '<p class="muted">No implementing requirement.</p>'}<div class="buttons"><button data-related="requirement" data-target="${esc(id)}" data-relation="implements">Add requirement</button><button data-typed-link="${esc(id)}" data-link-kind="requirement" data-relation="implements">Link requirement</button></div></div>`; }).join("") || '<p class="muted">No controls linked.</p>'}${(c?.requirements || []).filter(id => !(c?.controls || []).some(ctl => incoming(ctl,"implements").some(r => r.id === id))).length ? `<h4>Other linked requirements</h4>${(c?.requirements || []).filter(id => !(c?.controls || []).some(ctl => incoming(ctl,"implements").some(r => r.id === id))).map(id => requirementCard(byId(id))).join("")}` : ""}</section><section class="detail-section"><div class="section-head"><h3>Decision ${badge(c?.decision || "pending")}</h3><button data-decision="${esc(e.id)}">Record decision</button></div>${c?.decision_needs_review ? `<p>${badge("Applicability review required", "warn")}</p>` : ""}${e.data.decision?.rationale ? `<p>${esc(e.data.decision.rationale)}</p>` : ""}<p class="muted">Evidence coverage supports review. It does not accept residual risk.</p></section>${c?.gaps.length ? `<details><summary>Coverage gaps (${c.gaps.length})</summary><ul class="muted">${c.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></details>` : ""}`;
+    if (relatedRuns.length) body += `<details class="detail-section"><summary>Related RAM studies (${relatedRuns.length})</summary>${relatedRuns.map(runButton).join(" · ")}</details>`;
     const actionTargets = new Set([
       e.id,
       ...(c?.controls || []),
@@ -493,7 +537,10 @@ function renderInspector() {
       body += `<section class="detail-section"><h3>Open actions (${actions.length})</h3>${actions.map((a) => `<div class="record-row">${link(a.id)}<p>${esc(a.title)}</p><p class="muted">${esc(a.data.owner || "Owner unassigned")} · ${esc(a.data.due || "Due date unassigned")}</p></div>`).join("")}</section>`;
   } else {
     body += e.description ? `<p>${esc(e.description)}</p>` : "";
+    if (e.kind === "item") body += `<section class="detail-section"><h3>Physical system</h3><p>Parent: ${incoming(e.id,"contains").map(r => link(r.id)).join(" · ") || "Top-level item"}</p><p>Children: ${outgoing(e.id,"contains").map(r => link(r.id)).join(" · ") || "None"}</p></section>`;
+    if (e.kind === "control") body += `<section class="detail-section"><h3>Implementing requirements</h3>${incoming(e.id,"implements").map(requirementCard).join("") || '<p class="muted">No implementing requirements.</p>'}<button data-typed-link="${esc(e.id)}" data-link-kind="requirement" data-relation="implements">Link existing requirement</button></section>`;
     if (e.kind === "requirement") {
+      body += `<p>Implementing controls: ${outgoing(e.id,"implements").map(r=>link(r.id)).join(" · ") || "None"}</p><button data-typed-link="${esc(e.id)}" data-link-kind="control" data-relation="implements" data-reverse="true">Link implementing control</button>`;
       body += `<section class="detail-section"><div class="section-head"><h3>Verification</h3><button data-related="verification" data-target="${esc(e.id)}" data-relation="verifies">Add verification</button></div>${
         incoming(e.id, "verifies")
           .map(
@@ -518,12 +565,49 @@ function renderInspector() {
     (l) => l.source === e.id || l.target === e.id,
   );
   if (e.kind !== "action") body += `<div class="detail-section"><button data-related="action" data-target="${esc(e.id)}" data-relation="addresses">Add follow-up action</button>${e.kind === "item" ? `<button data-related="item" data-target="${esc(e.id)}" data-relation="contains" data-reverse="true">Add child item</button>` : ""}</div>`;
-  if (!portable && e.kind === 'item') body += `<p><button data-related="failure_mode" data-target="${esc(e.id)}" data-relation="fails">Analyze a failure mode</button></p>`;
+  if (!portable && e.kind === 'item') body += `<div class="buttons"><button data-related="function" data-target="${esc(e.id)}" data-relation="applies_to">Add function</button><button data-analyze-item="${esc(e.id)}">Open FMECA worksheet</button></div><p><button data-related="failure_mode" data-target="${esc(e.id)}" data-relation="fails">Analyze a failure mode</button></p>`;
   if (!portable && e.kind === 'control') body += `<p><button data-related="requirement" data-target="${esc(e.id)}" data-relation="implements">Add implementing requirement</button></p>`;
   if (!portable) body += `<p><button data-impact="${esc(e.id)}">Trace & change review</button></p>`;
   body += `<details class="detail-section"><summary>Relationships (${links.length})</summary><p><button data-link="${esc(e.id)}">Link existing</button></p>${links.map((l) => `<div class="record-row">${link(l.source === e.id ? l.target : l.source)} <span class="muted">${l.source === e.id ? "→" : "←"} ${esc(nice(l.relation))}</span><p class="muted">${esc(l.rationale)}</p></div>`).join("") || '<p class="muted">No relationships.</p>'}</details>`;
-  $("#inspector").innerHTML = body;
+  $(target).innerHTML = body;
 }
+function inspectRecord(id, opener) {
+  if (!byId(id)) return;
+  if (!$("#recordContext").open) { contextTrail = []; contextOpener = opener; }
+  const previous = contextTrail.indexOf(id);
+  if (previous >= 0) contextTrail = contextTrail.slice(0,previous+1);
+  else contextTrail.push(id);
+  renderContext();
+  if (!$("#recordContext").open) $("#recordContext").showModal();
+}
+function renderContext() {
+  const id = contextTrail.at(-1);
+  if (!byId(id)) { $("#recordContext").close(); return; }
+  $("#contextTrail").innerHTML = contextTrail.map((key, i) => `<button data-context-index="${i}" title="${esc(byId(key)?.title)}" ${i === contextTrail.length-1 ? 'aria-current="page"' : ''}>${esc(key)}</button>`).join('<span aria-hidden="true">›</span>');
+  renderInspector(id, "#contextRecord");
+}
+$("#closeContext").onclick = () => $("#recordContext").close();
+$("#recordContext").addEventListener("close", () => { contextTrail = []; if (contextOpener?.isConnected) contextOpener.focus(); contextOpener = null; });
+function renderDomainRegister() {
+  if (view === "requirements") kind = "requirement";
+  if (view === "system" && !["item","function","interface","operating_mode"].includes(kind)) kind = "item";
+  const all = matching(kind), p = paginate(all);
+  if (!all.some(e => e.id === selected)) selected = p.items[0]?.id || "";
+  const system = view === "system";
+  $("#content").innerHTML = head(system ? "System & functions" : "Requirements", `<button class="primary" data-add="${esc(kind)}">Add ${esc(nice(kind))}</button>`) +
+    (system ? `<div class="subnav">${[["item","Equipment"],["function","Functions"],["interface","Interfaces"],["operating_mode","Operating modes"]].map(([key,label]) => `<button data-system-kind="${key}" class="${kind===key?'active':''}">${label}</button>`).join("")}</div>` : "") + searchBar() +
+    table(system ? ["Record", "Allocation", "State"] : ["Requirement", "Implements", "Obligations"], p.items.map(e => row([`${link(e.id)}<span class="title">${esc(e.title)}</span>${!system && e.description ? `<p>${esc(e.description)}</p>` : ""}`,
+      system ? (kind === "item" ? incoming(e.id,"contains") : outgoing(e.id,"applies_to")).map(r=>link(r.id)).join(" · ") || (kind === "item" ? "Top level" : "Unallocated") : outgoing(e.id,"implements").map(r=>link(r.id)).join(" · ") || "Unallocated",
+      system ? badge(e.state) : `${e.data.obligations?.length || 0} <button data-edit="${esc(e.id)}">Define obligations</button>`], e.id === selected))) + p.html;
+}
+function linkTyped(target, recordKind, relation, reverse = false) {
+  const candidates = activeRecords(recordKind).filter(r => r.id !== target && !snapshot.links.some(l => l.source === (reverse ? target : r.id) && l.target === (reverse ? r.id : target) && l.relation === relation));
+  action(`Link ${nice(recordKind)} to ${target}`, `<label>${esc(nice(recordKind))}<select name="record" required>${option("", "Choose an existing record")}${candidates.map(r=>option(r.id,`${r.id} · ${r.title}`)).join("")}</select></label>${field("rationale","Applicability / rationale","","area",[],true)}`, async f => {
+    await mutate({link:{source:reverse ? target : f.elements.record.value,relation,target:reverse ? f.elements.record.value : target,rationale:f.elements.rationale.value}});
+    notice("Existing record linked.");
+  },"Link record");
+}
+
 const fields = {
   fault_gate: [
     ["logic", "Gate logic", "select", ["OR", "AND"]],
@@ -759,18 +843,38 @@ function edit(id = null, k = "hazard", rel = null) {
       if (obligation) Object.assign(d, {mode:obligation.mode, obligation:obligation.id, configuration:obligation.configuration});
     }
   }
+  const allocationKind = k === "failure_mode" ? "item" : k === "deviation" ? "study_node" : null;
+  const allocation = !e && !rel && allocationKind ? `<label class="full">${allocationKind === "item" ? "Equipment" : "Study node"}<select name="allocation">${option("", "Unallocated draft")}${activeRecords(allocationKind).map(r=>option(r.id,`${r.id} · ${r.title}`,scope)).join("")}</select></label>` : "";
   $("#editorType").textContent = nice(editing.kind);
   $("#editorTitle").textContent = e ? `Edit ${e.id}` : `Add ${k === "deviation" ? "HAZOP examination" : nice(k)}`;
+  const uses = e && ["requirement","control"].includes(e.kind) ? snapshot.coverage.filter(c => c.requirements.includes(e.id) || c.controls.includes(e.id)) : [];
+  const sharedNotice = uses.length > 1 ? `<div class="shared-record"><strong>Shared ${esc(nice(e.kind))}</strong><p>Used by ${uses.map(c => `${esc(c.hazard)} · ${esc(byId(c.hazard)?.title)}`).join("; ")}. Changes apply to every use.</p></div>` : "";
   $("#entityFields").innerHTML =
-    `${rel ? `<p class="result-state">${rel.reverse ? esc(rel.target) : "This record"} → ${esc(nice(rel.relation))} → ${rel.reverse ? "this record" : esc(rel.target)} · saved together</p>` : ""}<div class="form-grid">${e ? `<div class="read-only">Stable ID<br><strong>${esc(e.id)}</strong></div>` : field("id", "Stable ID", editing.id, "text", [], true)}${field("state", "Workflow state", editing.state, "select", info.states)}<div class="full">${field("title", "Title", editing.title, "text", [], true)}</div>${field("description", k === "requirement" ? "Requirement text" : "Description", editing.description, "area")}<fieldset><legend>${k === "item" ? "Component parameters (optional)" : k === "hazard" ? "Assessment" : "Record details"}</legend><div class="form-grid">${recordFields(editing)}</div></fieldset>${editing.kind === "verification" ? '<label class="full">Retain evidence file (optional, maximum 32 KiB)<input name="attachment" type="file"><span class="muted">Bytes and SHA-256 are retained in the study export. A file does not prove a successful test.</span></label>' : ""}${editing.kind === "requirement" ? `<fieldset><legend>Verification obligations</legend><p class="muted">Define each required mode and configuration explicitly.</p><div id="obligations">${(d.obligations || []).map(obligationRow).join("")}</div><button type="button" id="addObligation">Add obligation</button></fieldset>` : ""}</div>`;
+    `${sharedNotice}${rel ? `<p class="result-state">${rel.reverse ? esc(rel.target) : "This record"} → ${esc(nice(rel.relation))} → ${rel.reverse ? "this record" : esc(rel.target)} · saved together</p>` : ""}<div class="form-grid">${e ? `<div class="read-only">Stable ID<br><strong>${esc(e.id)}</strong></div>` : field("id", "Stable ID", editing.id, "text", [], true)}${field("state", "Workflow state", editing.state, "select", info.states)}<div class="full">${field("title", "Title", editing.title, "text", [], true)}</div>${allocation}${field("description", k === "requirement" ? "Requirement text" : "Description", editing.description, "area")}<fieldset><legend>${k === "item" ? "Component parameters (optional)" : k === "hazard" ? "Assessment" : "Record details"}</legend><div class="form-grid">${recordFields(editing)}</div></fieldset>${editing.kind === "verification" ? '<label class="full">Retain evidence file (optional, maximum 32 KiB)<input name="attachment" type="file"></label>' : ""}${editing.kind === "requirement" ? `<fieldset><legend>Verification obligations</legend><p class="muted">Define each required mode and configuration explicitly.</p><div id="obligations">${(d.obligations || []).map(obligationRow).join("")}</div><button type="button" id="addObligation">Add obligation</button></fieldset>` : ""}</div>`;
   $("#entityError").textContent = "";
   draftDirty = false;
-  $("#editor").showModal();
+  if (view === 'hazards') {
+    reviewFocus = id || rel?.target || selected;
+    editorDocked = true;
+    renderReviewDock();
+    $('#reviewDock').classList.add('editing');
+    $('#reviewEditorSlot').append($('#editor'));
+    $('#editor').classList.add('docked-editor');
+    $('#editorType').textContent = rel ? `${nice(editing.kind)} for ${rel.target}` : `${nice(editing.kind)} · ${editing.id}`;
+    $('#entityFields .result-state') && ($('#entityFields .result-state').textContent = rel ? `${nice(rel.relation)} ${rel.target} · ${byId(rel.target)?.title || ''}` : '');
+    $('#editor').show();
+    $('#closeEditor').focus({preventScroll:true});
+    $('#reviewDock').scrollTop = 0;
+  } else $('#editor').showModal();
 }
 function recordFields(e) {
   const entries = (fields[e.kind] || []).map(([key, label, type, choices]) =>
     field(`data.${key}`, label, get(e.data, key) ?? "", type, choices),
   );
+  if (["failure_mode","deviation"].includes(e.kind)) {
+    const groups = e.kind === "failure_mode" ? [["Function & failure",0,3],["Effects",3,6],["Detection & provision",6,9],["Assessment & follow-through",9,13]] : [["Examination",0,4],["Causes & consequences",4,6],["Safeguards & follow-through",6,10]];
+    return groups.map(([title,a,b])=>`<div class="form-section form-grid full"><h3>${title}</h3>${entries.slice(a,b).join("")}</div>`).join("");
+  }
   if (e.kind !== "item") return entries.join("");
   return `<label>Numerical model<select name="data.model">${option("", "Structural item", e.data.model || "")}${option("exponential", "Exponential component", e.data.model || "")}${e.data.model && !["exponential"].includes(e.data.model) ? option(e.data.model, e.data.model + " (imported model)", e.data.model) : ""}</select></label><div id="numericalFields" class="form-grid full" ${e.data.model === "exponential" ? "" : "hidden"}>${entries.slice(1).join("")}</div>`;
 }
@@ -779,6 +883,7 @@ function obligationRow(o = {}) {
 }
 function focusSelection() {
   const target =
+    $("#recordContext[open] [data-edit]") ||
     $("#inspector [data-edit]") ||
     $("#graphDock [data-edit]") ||
     $("#studyDock [data-edit]") ||
@@ -789,6 +894,12 @@ function closeEditor() {
   if (draftDirty && !confirm("Discard the unsaved record draft?")) return;
   $("#editor").close();
   draftDirty = false;
+}
+function selectSavedRecord(record) {
+  if (editorDocked) { reviewFocus = record.id; return; }
+  if ($("#recordContext").open) return;
+  const primary = view === "hazards" ? "hazard" : view === "requirements" ? "requirement" : view === "system" ? kind : view === "studies" ? ({fmeca:"failure_mode",hazop:"deviation"}[method]) : view === "evidence" && evidenceView === "records" ? kind : null;
+  if (record.kind === primary || (view === "evidence" && evidenceView === "records" && !kind)) selected = record.id;
 }
 async function evidenceContent(file) {
   if (file.size > 32768)
@@ -814,6 +925,11 @@ $("#entityForm").oninput = event => {
 };
 $("#entityForm").onsubmit = async (ev) => {
   ev.preventDefault();
+  if ($('#draftRecovery')) {
+    $('#entityError').textContent = 'Compare the latest revision before saving this draft.';
+    $('#reconcileDraft').focus();
+    return;
+  }
   const f = ev.target;
   const submit = f.querySelector("button.primary");
   submit.disabled = true;
@@ -874,16 +990,17 @@ $("#entityForm").onsubmit = async (ev) => {
       );
     pendingDraft = clone(e);
     delete e.revision;
-    const op = related
+    const recordRelation = related || (f.elements.allocation?.value ? {target:f.elements.allocation.value, relation:e.kind === "failure_mode" ? "fails" : "deviates"} : null);
+    const op = recordRelation
       ? {
           related: {
             entity: e,
             link: {
-              source: related.reverse ? related.target : e.id,
-              relation: related.relation,
-              target: related.reverse ? e.id : related.target,
+              source: recordRelation.reverse ? recordRelation.target : e.id,
+              relation: recordRelation.relation,
+              target: recordRelation.reverse ? e.id : recordRelation.target,
               rationale:
-                related.rationale ||
+                recordRelation.rationale ||
                 "Created from the linked record workspace; applicability requires review.",
             },
           },
@@ -892,7 +1009,7 @@ $("#entityForm").onsubmit = async (ev) => {
         ? { create_entity: e }
         : { entity: e };
     await mutate(op, editorRevision);
-    selected = e.id;
+    selectSavedRecord(e);
     draftDirty = false;
     $("#editor").dataset.focusSelection = "true";
     $("#editor").close();
@@ -902,7 +1019,7 @@ $("#entityForm").onsubmit = async (ev) => {
     $("#entityError").textContent = e.message;
     if (e.status === 409 && pendingDraft) {
       $("#draftRecovery")?.remove();
-      $("#entityError").insertAdjacentHTML("afterend", '<div id="draftRecovery"><p>Your draft is still here. Compare it with the latest saved record before saving again.</p><div class="buttons"><button type="button" id="reconcileDraft">Compare latest revision</button><button type="button" id="downloadDraft">Download my draft</button></div><div id="conflictFields"></div></div>');
+      $("#entityError").insertAdjacentHTML("afterend", '<div id="draftRecovery"><p>Your draft is still here. Compare it with the latest saved record before saving again.</p><div class="buttons"><button type="button" class="primary" id="reconcileDraft">Compare latest revision</button><button type="button" id="downloadDraft">Download my draft</button></div><div id="conflictFields"></div></div>');
     }
   } finally {
     submit.disabled = false;
@@ -915,11 +1032,21 @@ for (const id of ["#editor", "#actionDialog"])
       focusSelection();
     }
   });
+$('#editor').addEventListener('close', () => {
+  if (!editorDocked) return;
+  editorDocked = false; $('#editor').classList.remove('docked-editor'); document.body.append($('#editor'));
+  $('#reviewDock').classList.remove('editing');
+  renderHazards();
+  $('#reviewRecordBody [data-edit]')?.focus();
+});
 $("#closeEditor").onclick = closeEditor;
 $("#cancelEditor").onclick = closeEditor;
 $("#editor").addEventListener("cancel", (e) => {
   e.preventDefault();
   closeEditor();
+});
+$('#editor').addEventListener('keydown', e => {
+  if (editorDocked && e.key === 'Escape') { e.preventDefault(); closeEditor(); }
 });
 function action(title, html, handler, submit = "Save") {
   actionHandler = handler;
@@ -1062,7 +1189,7 @@ function renderStudies() {
     selected = data[0]?.id || "";
   const p = paginate(data);
   $("#content").innerHTML =
-    `${methodTabs()}${head(fm ? "Failure modes & effects" : "HAZOP worksheet", `<div class="buttons">${!fm ? '<button data-add="study_node">Add study node</button>' : ""}<button class="primary" data-add="${type}">Add ${fm ? "failure mode" : "examination"}</button></div>`)}${searchBar()}<div class="worksheet">${table(
+    `${methodTabs()}${head(fm ? "Failure modes & effects" : "HAZOP worksheet", `<div class="buttons">${!fm ? '<button data-add="study_node">Add study node</button>' : ""}<button class="primary" data-add="${type}">Add ${fm ? "failure mode" : "examination"}</button></div>`)}${fm ? `<label class="method-scope">Equipment<select id="methodScope">${option("","All equipment",scope)}${activeRecords("item").map(r=>option(r.id,`${r.id} · ${r.title}`,scope)).join("")}</select></label>` : ""}${searchBar()}<div class="worksheet">${table(
       fm
         ? [
             "Failure mode",
@@ -1121,12 +1248,12 @@ function renderStudies() {
     }`;
   const e = byId(selected);
   $("#studyDock").innerHTML = e
-    ? `<div class="dock"><div><p class="eyebrow">Selected ${esc(nice(e.kind))} · ${esc(e.id)}</p><h2>${esc(e.title)}</h2><p>${esc(e.description || e.data.intent || "")}</p><div class="buttons">${snapshot.links
+    ? `<div class="dock"><div><p class="eyebrow">Selected ${esc(nice(e.kind))} · ${esc(e.id)}</p><h2>${esc(e.title)}</h2><p>${esc(e.description || e.data.intent || "")}</p><div class="buttons">${[...new Set(snapshot.links
         .filter((l) => l.source === e.id || l.target === e.id)
-        .map((l) => link(l.source === e.id ? l.target : l.source))
+        .map((l) => l.source === e.id ? l.target : l.source))].map(link)
         .join(
           " ",
-        )}</div></div><div class="buttons"><button data-edit="${esc(e.id)}">Edit selected record</button><button data-link="${esc(e.id)}">Link existing</button><button data-related="action" data-target="${esc(e.id)}" data-relation="addresses">Add action</button>${e.kind === "study_node" ? `<button data-related="deviation" data-target="${esc(e.id)}" data-relation="deviates">Add examination</button>` : ""}${e.kind === "failure_mode" || e.kind === "deviation" ? `<button data-related="hazard" data-target="${esc(e.id)}" data-relation="causes" data-reverse="true">Create linked hazard</button>` : ""}</div></div>`
+        )}</div></div><div class="buttons"><button data-edit="${esc(e.id)}">Edit selected record</button><button data-link="${esc(e.id)}">Relationships</button><button data-related="action" data-target="${esc(e.id)}" data-relation="addresses">Add action</button>${e.kind === "study_node" ? `<button data-related="deviation" data-target="${esc(e.id)}" data-relation="deviates">Add examination</button>` : ""}${e.kind === "failure_mode" || e.kind === "deviation" ? `<button data-typed-link="${esc(e.id)}" data-link-kind="hazard" data-relation="causes" data-reverse="true">Link existing hazard</button><button data-related="hazard" data-target="${esc(e.id)}" data-relation="causes" data-reverse="true">Create linked hazard</button>` : ""}</div></div>`
     : '<p class="empty">Select a worksheet row to inspect its links or edit it.</p>';
 }
 function saveAnalysis() {
@@ -1158,7 +1285,7 @@ function topologyHTML(node, path = "") {
   const comps = snapshot.entities.filter(
     (e) => e.kind === "item" && e.state !== "archived",
   );
-  return `<div class="node"><div class="node-head">${node.item !== undefined ? `<select aria-label="Component ${esc(path || "root")}" data-component="${esc(path)}">${option("", "Select component", node.item)}${comps.map((e) => option(e.id, `${e.id} · ${e.title}`, node.item)).join("")}</select>` : `<select aria-label="Group logic ${esc(path || "root")}" data-gate="${esc(path)}">${option("series", "Series · all required", node.op)}${option("parallel", "Active parallel · any one sufficient", node.op)}</select>`}<button type="button" data-remove-node="${esc(path)}">Remove</button></div>${node.children ? `<div class="node-actions"><button type="button" data-child="${esc(path)}" data-child-type="item">Add component</button><button type="button" data-child="${esc(path)}" data-child-type="group">Add nested group</button></div>${node.children.map((n, i) => topologyHTML(n, path ? `${path}.${i}` : String(i))).join("")}` : ""}</div>`;
+  return `<div class="node"><div class="node-head">${node.item !== undefined ? `<select aria-label="Component ${esc(path || "root")}" data-component="${esc(path)}">${option("", "Select component", node.item)}${node.item && !comps.some(e => e.id === node.item) ? option(node.item,`${node.item} · unavailable — choose a replacement`,node.item) : ""}${comps.map((e) => option(e.id, `${e.id} · ${e.title}`, node.item)).join("")}</select>` : `<select aria-label="Group logic ${esc(path || "root")}" data-gate="${esc(path)}">${option("series", "Series · all required", node.op)}${option("parallel", "Active parallel · any one sufficient", node.op)}</select>`}<button type="button" data-remove-node="${esc(path)}">Remove</button></div>${node.children ? `<div class="node-actions"><button type="button" data-child="${esc(path)}" data-child-type="item">Add component</button><button type="button" data-child="${esc(path)}" data-child-type="group">Add nested group</button></div>${node.children.map((n, i) => topologyHTML(n, path ? `${path}.${i}` : String(i))).join("")}` : ""}</div>`;
 }
 function renderRAMEditor() {
   diagramSVG = "";
@@ -1169,29 +1296,27 @@ function renderRAMEditor() {
       "RAM study",
       '<button data-view="baselines">Historical runs</button>',
     ) +
-    `<section class="ram-graphic"><h2>Success schematic</h2><div class="toolbar"><button type="button" id="previewRBD">Refresh draft schematic</button>${diagramTools()}</div><div class="engineering-diagram" id="rbdDiagram"><p class="empty">${tree ? "Drawing the draft topology…" : "Add a component or a group below to start the success model."}</p></div></section><div class="study-layout"><form id="analysis"><h2>Study definition</h2><div class="form-grid">${field("name", "Study name", d.name, "text", [], true)}${field("mode", "Operating mode", d.mode, "text", [], true)}${field("success", "Success condition", d.success, "area", [], true)}${field("mission_hours", "Mission duration [h]", d.mission_hours, "number", [], true)}${field("repair_target_hours", "Active repair target [h]", d.repair_target_hours, "number", [], true)}</div><h3>Success topology</h3><p class="muted">Physical containment does not define the RBD. Each installed component may appear once.</p><div class="topology" id="topology">${topologyHTML(tree)}</div><details><summary>Dependency review & assumptions</summary><div class="form-grid">${field("dependency_status", "Study dependency disposition", d.dependency_status, "select", ["unreviewed", "reviewed_independent", "factored_shared_support"])}${field("independence", "Independence and repair-resource rationale", d.independence, "area", [], true)}</div><p class="muted">Independent active exponential components; unlimited separate active repair resources. No standby, load sharing, operational availability, shared crews or general CCF model.</p></details><div class="form-actions"><button class="primary">Calculate & retain run</button></div></form><section class="results" id="results" aria-label="Calculation results"></section></div>`;
+    `<div class="ram-edit-layout"><form id="analysis"><h2>Study definition</h2><div class="form-grid">${field("name", "Study name", d.name, "text", [], true)}${field("mode", "Operating mode", d.mode, "text", [], true)}${field("success", "Success condition", d.success, "area", [], true)}${field("mission_hours", "Mission duration [h]", d.mission_hours, "number", [], true)}${field("repair_target_hours", "Active repair target [h]", d.repair_target_hours, "number", [], true)}</div><h3>Success topology</h3><p class="muted">Physical containment does not define the RBD. Each installed component may appear once.</p><div class="topology" id="topology">${topologyHTML(tree)}</div><section id="ramPreparation" class="preparation" aria-label="Component input checklist"></section><details open><summary>Dependency review & assumptions</summary><div class="form-grid">${field("dependency_status", "Study dependency disposition", d.dependency_status, "select", ["unreviewed", "reviewed_independent", "factored_shared_support"])}${field("independence", "Independence and repair-resource rationale", d.independence, "area", [], true)}</div><p class="muted">Independent active exponential components; unlimited separate active repair resources. No standby, load sharing, operational availability, shared crews or general CCF model.</p></details><div class="form-actions"><button type="button" id="checkRAMInputs">Check inputs</button><button class="primary">Calculate & retain run</button></div></form><aside><section class="ram-graphic"><h2>Success schematic</h2><div class="toolbar"><button type="button" id="previewRBD">Refresh draft schematic</button>${diagramTools()}</div><div class="engineering-diagram" id="rbdDiagram"><p class="empty">${tree ? "Drawing the draft topology…" : "Add a component or a group below to start the success model."}</p></div></section><details class="previous-result"><summary>Previous retained result</summary><section class="results" id="results" aria-label="Calculation results"></section></details></aside></div>`;
   renderResults();
+  renderRAMPreparation();
   if (tree) previewRBD();
   $("#analysis").oninput = () => {
     analysisDirty = true;
     saveAnalysis();
+    renderRAMPreparation();
     renderResults();
   };
   $("#analysis").onchange = () => {
     analysisDirty = true;
     saveAnalysis();
+    renderRAMPreparation();
     renderResults();
   };
   $("#analysis").onsubmit = async (ev) => {
     ev.preventDefault();
     saveAnalysis();
     try {
-      const c = clone(analysisDraft);
-      for (const k of ["mission_hours", "repair_target_hours"]) {
-        if (String(c[k]).trim() === "" || !Number.isFinite(Number(c[k])))
-          throw new Error("Enter finite mission and repair durations.");
-        c[k] = Number(c[k]);
-      }
+      const c = analysisConfig();
       currentRun = await api("/api/analyze", {
         project: snapshot.project.id,
         expected: snapshot.project.revision,
@@ -1209,6 +1334,21 @@ function renderRAMEditor() {
     }
   };
 }
+function renderRAMPreparation() {
+  const el = $("#ramPreparation");
+  if (!el) return;
+  const rows = ramInputChecklist(snapshot.entities, analysisDraft);
+  el.innerHTML = `<h3>Component inputs</h3>${rows.length ? rows.map(r => `<div class="record-row"><div><strong>${esc(r.id || "Select component")} · ${esc(r.title)}</strong>${r.issues.length ? `<ul class="error">${r.issues.map(issue=>`<li>${esc(issue)}</li>`).join("")}</ul>` : '<p class="muted">Required component fields recorded.</p>'}</div>${byId(r.id) ? `<button type="button" data-edit="${esc(r.id)}">Edit inputs</button>` : ""}</div>`).join("") : '<p class="muted">Add components to see their required inputs.</p>'}<p class="muted">Check inputs validates the full model, including dependencies and unsupported configurations. Drafts remain editable.</p><div id="inputCheckResult" role="status"></div>`;
+}
+function analysisConfig() {
+  saveAnalysis();
+  const c = clone(analysisDraft);
+  for (const k of ["mission_hours", "repair_target_hours"]) {
+    if (String(c[k]).trim() === "" || !Number.isFinite(Number(c[k]))) throw new Error("Enter finite mission and repair durations.");
+    c[k] = Number(c[k]);
+  }
+  return c;
+}
 function nodeAt(path) {
   return path === ""
     ? tree
@@ -1222,6 +1362,7 @@ function treeChanged() {
   analysisDirty = true;
   saveAnalysis();
   $("#topology").innerHTML = topologyHTML(tree);
+  renderRAMPreparation();
   renderResults();
 }
 function components(node) {
@@ -1536,7 +1677,7 @@ async function example() {
   saveAnalysis();
   view = "hazards";
   render();
-  notice("Fictional training study. Parameters and evidence are synthetic.");
+  notice();
 }
 async function freeze() {
   action(
@@ -1570,6 +1711,7 @@ async function exportStudy(archive = false) {
   );
 }
 $("#projects").onchange = async (ev) => {
+  if (editorDocked && $("#editor").open) { ev.target.value=snapshot.project.id; notice("Save or cancel the current edit before switching studies."); return; }
   try {
     if (draftDirty) return notice("Finish the open editor first.");
     if (setupDirty) {
@@ -1656,6 +1798,7 @@ document.addEventListener("input", (ev) => {
     const input = ev.target;
     query = input.value;
     page = 0;
+    if (["system","requirements"].includes(view)) { renderDomainRegister(); renderInspector(); }
     if (view === "hazards") renderHazards();
     if (view === "evidence") evidenceView === "coverage" ? renderCoverage() : renderRegister();
     if (view === "studies") renderStudies();
@@ -1672,6 +1815,7 @@ document.addEventListener("change", (ev) => {
     $("#numericalFields").hidden = t.value !== "exponential";
   if (t.id === "actionOwner") { actionOwner = t.value; page = 0; renderActions(); writeRoute(); }
   if (t.id === "reviewCategory") { reviewCategory = t.value; page = 0; renderReview().catch(e => notice(e.message)); }
+  if (t.id === "methodScope") { scope = t.value; selected = ""; page = 0; renderTree(); render(); }
   if (t.id === "recordKind") {
     kind = t.value;
     page = 0;
@@ -1703,11 +1847,27 @@ if(browserRuntime) {
     }catch(error){notice(error.message);}
   };
 }
+document.addEventListener('click', ev => {
+  if (editorDocked && $('#editor').open && ev.target.closest('button, [data-select]') && !ev.target.closest('#editor')) {
+    ev.preventDefault(); ev.stopImmediatePropagation();
+    notice('Save or cancel the current edit before switching records.');
+  }
+}, true);
 document.addEventListener("click", async (ev) => {
   const b = ev.target.closest("button, [data-select]");
   if (!b) return;
   try {
+    if (b.id === 'toggleNavigation') { const open=b.getAttribute('aria-expanded')!=='true'; b.setAttribute('aria-expanded',String(open)); $('#studyNavigation').classList.toggle('is-open',open); return; }
+    if (b.id === 'closeReviewDetail') { const id=reviewOpenerId; reviewFocus=''; renderHazards(); writeRoute(); document.querySelector(`[data-review-record="${CSS.escape(id)}"]`)?.focus(); return; }
+    if (b.dataset.reviewRecord) { openReviewRecord(b.dataset.reviewRecord); return; }
+    if (b.dataset.reviewEdit) { openReviewRecord(b.dataset.reviewEdit,false); edit(b.dataset.reviewEdit,byId(b.dataset.reviewEdit).kind); return; }
+    if (b.dataset.reviewCreate) { openReviewRecord(b.dataset.reviewCreate,false); edit(null,'verification',{target:b.dataset.reviewCreate,relation:'verifies'}); return; }
+    if (b.dataset.reviewHazard) { notice(); view='hazards'; selected=b.dataset.reviewHazard;reviewFocus='';query='';render();return; }
+    if (b.dataset.reviewFilter) { reviewFilter=b.dataset.reviewFilter;renderHazards();return; }
+    if (b.id === 'clearReviewSearch') { query='';renderHazards();$('#search').focus();return; }
+    if (b.closest('.app-nav')) { $('#studyNavigation').classList.remove('is-open');$('#toggleNavigation').setAttribute('aria-expanded','false'); }
     if (b.dataset.reviewTab) { reviewTab = b.dataset.reviewTab; reviewCategory = ''; query = ''; page = 0; render(); }
+    if ((b.dataset.view || b.dataset.method || b.dataset.impact || b.dataset.record) && $("#recordContext").open) { if (b.dataset.method === "bowtie" && byId(contextTrail.at(-1))?.kind === "hazard") selected = contextTrail.at(-1); $("#recordContext").close(); }
     if (b.dataset.impact) { reviewTarget = b.dataset.impact; reviewTab = 'trace'; query = ''; page = 0; view = 'review'; render(); }
     if (b.id === 'clearImpact') { reviewTarget = ''; render(); }
     if (b.dataset.importance) await showImportance(b.dataset.importance, b);
@@ -1734,11 +1894,14 @@ document.addEventListener("click", async (ev) => {
       setupDirty = false;
     }
     if (b.dataset.view) {
+      notice();
       runRequest++;
       saveAnalysis();
       ramEditing = false;
       filter = "all";
       view = b.dataset.view;
+      if (view === "system") kind = "item";
+      if (view === "requirements") kind = "requirement";
       if (view === "hazards" && byId(selected)?.kind !== "hazard") selected = bowtieHazard || matching("hazard")[0]?.id || "";
       if (view === "evidence") {
         evidenceView = "coverage"; coverageFilter = "all";
@@ -1751,6 +1914,7 @@ document.addEventListener("click", async (ev) => {
     }
     if (b.dataset.view || b.dataset.method || b.dataset.reviewTab || b.dataset.impact) window.scrollTo({top:0,behavior:"instant"});
     if (b.dataset.method) {
+      notice();
       view = "studies";
       method = b.dataset.method;
       query = "";
@@ -1774,38 +1938,21 @@ document.addEventListener("click", async (ev) => {
       render();
     }
     if (b.dataset.select) {
-      if (selected && selected !== b.dataset.select)
-        selectionHistory.push(selected);
-      selected = b.dataset.select;
-      query = ""; page = 0;
-      if (
-        ["overview", "review", "actions", "ram", "setup", "baselines", "evidence"].includes(view) ||
-        (view === "hazards" && byId(selected)?.kind !== "hazard") ||
-        (view === "studies" &&
-          !["bowtie", "fta"].includes(method) &&
-          !["deviation", "failure_mode", "study_node"].includes(
-            byId(selected)?.kind,
-          ))
-      ) {
-        saveAnalysis();
-        view = byId(selected).kind === "hazard" ? "hazards" : "evidence";
-        scope = "";
-        kind = byId(selected).kind;
-        evidenceView = "records";
-        query = "";
-      }
+      const record = byId(b.dataset.select);
+      const ownRow = b.closest("#content table") && ((view === "hazards" && record?.kind === "hazard") || (["system","requirements"].includes(view) && record?.kind === kind) || (view === "evidence" && evidenceView === "records") || (view === "studies" && ((method === "fmeca" && record?.kind === "failure_mode") || (method === "hazop" && record?.kind === "deviation"))));
       if (b.closest(".engineering-diagram") && $("#graphDock")) {
-        $("#graphDock").innerHTML = graphDock();
-        updateDiagramSelection();
-      } else render();
-      if (innerWidth <= 760) {
-        const detail =
-          $("#inspector:not(:empty)") || $("#graphDock") || $("#studyDock");
-        detail?.scrollIntoView({ block: "start" });
-      }
+        selected = b.dataset.select; $("#graphDock").innerHTML = graphDock(); updateDiagramSelection();
+      } else if (ownRow && !b.closest("#recordContext")) {
+        selected = b.dataset.select; render();
+      } else inspectRecord(b.dataset.select, b);
     }
+    if (b.dataset.contextIndex !== undefined) { contextTrail = contextTrail.slice(0,Number(b.dataset.contextIndex)+1); renderContext(); }
+    if (b.dataset.typedLink) linkTyped(b.dataset.typedLink,b.dataset.linkKind,b.dataset.relation,b.dataset.reverse === "true");
+    if (b.dataset.analyzeItem) { scope = b.dataset.analyzeItem; method = "fmeca"; view = "studies"; selected = ""; query = ""; page = 0; renderTree(); render(); }
+    if (b.dataset.systemKind) { kind = b.dataset.systemKind; query = ""; page = 0; selected = ""; render(); }
+    if (b.hasAttribute("data-library")) { view = "evidence"; evidenceView = "records"; kind = ""; query = ""; page = 0; render(); }
     if (b.dataset.inspect) {
-      kind = byId(selected).kind; evidenceView = "records"; view = kind === "hazard" ? "hazards" : "evidence"; scope = ""; query = ""; render();
+      inspectRecord(selected,b);
     }
     if (b.id === "completeExample" || b.dataset.start === "complete") {
       const created = await api("/api/complete-example", {});
@@ -1813,7 +1960,7 @@ document.addEventListener("click", async (ev) => {
       analysisDraft = null;
       await projectList(created.project.id);
       await load(created.project.id, true);
-      notice("Fictional station study · all parameters and evidence are synthetic.");
+      notice();
     }
     if (b.id === "exportArchive") await exportStudy(true);
     if (b.id === "backupWorkspace") {
@@ -1825,6 +1972,27 @@ document.addEventListener("click", async (ev) => {
       notice(browserRuntime?'Workspace backup downloaded: all studies, history, baselines and retained runs. Use Restore workspace backup to reopen it.':'Workspace backup downloaded: all studies, history, baselines and retained runs. Restore to a new database using the documented recovery command.');
       $('.project-menu').open = false;
     }
+    if (b.id === "checkFTAInputs") {
+      b.disabled = true;
+      const target = $("#ftaCheckResult"), revision = snapshot.project.revision;
+      saveFTA(); const basis = JSON.stringify(ftaDraft);
+      try {
+        await api("/api/check-fault-tree",{project:snapshot.project.id,expected:revision,config:ftaDraft});
+        if (target.isConnected) target.textContent = snapshot.project.revision === revision && JSON.stringify(ftaDraft) === basis ? `Inputs accepted for study revision ${revision}. No run saved.` : "Inputs changed; check again.";
+      } catch (error) { if (target.isConnected) target.textContent = error.message; }
+      finally { if (b.isConnected) b.disabled = false; }
+    }
+    if (b.id === "checkRAMInputs") {
+      b.disabled = true;
+      const target = $("#inputCheckResult"), revision = snapshot.project.revision;
+      try {
+        const c = analysisConfig(), basis = JSON.stringify(c);
+        await api("/api/check-analysis",{project:snapshot.project.id,expected:revision,config:c});
+        if (target.isConnected) target.textContent = snapshot.project.revision === revision && JSON.stringify(analysisConfig()) === basis ? `Inputs accepted for study revision ${revision}. No run saved.` : "Inputs changed; check again.";
+      } catch (error) { if (target.isConnected) target.textContent = error.message; }
+      finally { if (b.isConnected) b.disabled = false; }
+    }
+    if (b.id === "resumeRAM") { ramEditing = true; render(); }
     if (b.id === "editRAM" || b.id === "newRAM" || b.hasAttribute("data-new-ram")) {
       analysisDraft = b.id === "editRAM" && currentRun ? clone(currentRun.basis.config) : defaultAnalysis();
       tree = analysisDraft.tree; analysisDirty = false; ramEditing = true; render();
@@ -1832,7 +2000,7 @@ document.addEventListener("click", async (ev) => {
     if (b.dataset.edit) edit(b.dataset.edit, byId(b.dataset.edit).kind);
     if (b.dataset.add) {
       const type = b.dataset.add;
-      const rel = scope && byId(scope)?.kind === 'item' && ['hazard','item','requirement','control','failure_mode'].includes(type)
+      const rel = scope && byId(scope)?.kind === 'item' && ['hazard','item','requirement','control','failure_mode','study_node'].includes(type)
         ? {target:scope,relation:type === 'item' ? 'contains' : type === 'failure_mode' ? 'fails' : 'applies_to',reverse:type === 'item'} : null;
       edit(null,type,rel);
     }
@@ -2048,6 +2216,7 @@ async function start() {
     }
     if(browserRuntime) { loadingProject(true); await runtimeReady; loadingProject(false); }
     info = await api("/api/info");
+    $('#appVersion').textContent = `RAMS Workbench ${info.version}`;
     await projectList();
     const id = portable?.snapshot.project.id || uiStorage.getItem("rams-project");
     if (id && [...$("#projects").options].some((o) => o.value === id))
@@ -2119,19 +2288,7 @@ document.addEventListener("keydown", (ev) => {
   }
 });
 
-function methodTabs() {
-  return `<div class="subnav"><button data-view="hazards">Hazards</button>${[
-    ["hazop", "HAZOP"],
-    ["fmeca", "FMECA"],
-    ["bowtie", "Bow tie"],
-    ["fta", "Fault trees"],
-  ]
-    .map(
-      ([key, label]) =>
-        `<button data-method="${key}" class="${method === key ? "active" : ""}">${label}</button>`,
-    )
-    .join("")}</div>`;
-}
+function methodTabs() { return ""; }
 async function previewRBD() {
   const token = ++diagramToken, project = snapshot.project.id;
   diagramSVG = "";
@@ -2287,12 +2444,14 @@ function saveFTA() {
   );
 }
 async function renderFTA() {
+  const project = snapshot.project.id, revision = snapshot.project.revision;
   if (!ftaRun && !ftaDraft) {
     const saved = studyRecords.runs.find(r => r.method === "static_fta");
     if (saved) {
-      ftaRun = await api(`${url("/api/record")}&kind=runs&id=${encodeURIComponent(saved.id)}`);
-      ftaDraft = clone(ftaRun.basis.config); ftaDirty = false; selected = ftaDraft.top;
-      if (view !== "studies" || method !== "fta") return;
+      $("#content").innerHTML = head("Fault-tree analysis") + '<p role="status">Opening retained fault-tree basis…</p>';
+      const retained = await api(`${url("/api/record")}&kind=runs&id=${encodeURIComponent(saved.id)}`);
+      if (view !== "studies" || method !== "fta" || snapshot.project.id !== project || snapshot.project.revision !== revision) return;
+      ftaRun = retained; ftaDraft = clone(retained.basis.config); ftaDirty = false; selected = ftaDraft.top;
     }
   }
   const gates = matching("fault_gate");
@@ -2325,7 +2484,7 @@ async function renderFTA() {
     ) +
     `${
       gates.length
-        ? `<div class="fta-layout"><section><details class="fta-basis"><summary>Analysis setup · ${esc(d.mode || "mode required")} · ${esc(d.mission_hours ?? "—")} h · ${d.quantify ? "quantitative" : "qualitative"}</summary><form id="ftaForm"><div class="form-grid">${field("name", "Study name", d.name, "text", [], true)}<label>Top event / gate<select name="top" required>${gates.map((g) => option(g.id, `${g.id} · ${g.title}`, top)).join("")}</select></label>${field("mode", "Operating mode", d.mode, "text", [], true)}${field("mission_hours", "Probability horizon [h]", d.mission_hours ?? "", "number", [], true)}</div><label class="check"><input type="checkbox" name="quantify" ${d.quantify ? "checked" : ""}>Quantify declared independent basic events</label><details ${d.quantify ? "open" : ""}><summary>Quantification boundary</summary>${field("independence", "Independence rationale", d.independence, "area")}<p class="muted">Static AND/OR only; at most 16 basic events. Basic-event inputs are probabilities for this exact mode and horizon. No dynamic gates, dependency solver or safety target inferred.</p></details></form></details><div class="fta-run-control"><button class="primary" form="ftaForm">Analyze & retain run</button></div></section><section><div class="toolbar"><button data-related="fault_event" data-target="${esc(top)}" data-relation="input_to">Add basic event to top</button><button data-related="fault_gate" data-target="${esc(top)}" data-relation="input_to">Add gate to top</button><button data-link-input="${esc(top)}">Link existing input</button>${diagramTools()}</div><div class="engineering-diagram" id="ftaDiagram"></div><div id="ftaResults"></div><div id="graphDock">${graphDock()}</div><details><summary>Fault-tree records (${snapshot.entities.filter((e) => ["fault_gate", "fault_event"].includes(e.kind)).length})</summary>${snapshot.entities
+        ? `<div class="fta-layout"><section><details class="fta-basis"><summary>Analysis setup · ${esc(d.mode || "mode required")} · ${esc(d.mission_hours ?? "—")} h · ${d.quantify ? "quantitative" : "qualitative"}</summary><form id="ftaForm"><div class="form-grid">${field("name", "Study name", d.name, "text", [], true)}<label>Top event / gate<select name="top" required>${gates.map((g) => option(g.id, `${g.id} · ${g.title}`, top)).join("")}</select></label>${field("mode", "Operating mode", d.mode, "text", [], true)}${field("mission_hours", "Probability horizon [h]", d.mission_hours ?? "", "number", [], true)}</div><label class="check"><input type="checkbox" name="quantify" ${d.quantify ? "checked" : ""}>Quantify declared independent basic events</label><details ${d.quantify ? "open" : ""}><summary>Quantification boundary</summary>${field("independence", "Independence rationale", d.independence, "area")}<p class="muted">Static AND/OR only; at most 16 basic events. Basic-event inputs are probabilities for this exact mode and horizon. No dynamic gates, dependency solver or safety target inferred.</p></details></form></details><div class="fta-run-control"><button type="button" id="checkFTAInputs">Check inputs</button><button class="primary" form="ftaForm">Analyze & retain run</button><p id="ftaCheckResult" role="status"></p></div></section><section><div class="toolbar"><button data-related="fault_event" data-target="${esc(top)}" data-relation="input_to">Add basic event to top</button><button data-related="fault_gate" data-target="${esc(top)}" data-relation="input_to">Add gate to top</button><button data-link-input="${esc(top)}">Link existing input</button>${diagramTools()}</div><div class="engineering-diagram" id="ftaDiagram"></div><div id="ftaResults"></div><div id="graphDock">${graphDock()}</div><details><summary>Fault-tree records (${snapshot.entities.filter((e) => ["fault_gate", "fault_event"].includes(e.kind)).length})</summary>${snapshot.entities
             .filter((e) => ["fault_gate", "fault_event"].includes(e.kind))
             .map(
               (e) =>
@@ -2338,6 +2497,7 @@ async function renderFTA() {
   $("#ftaForm").oninput = () => {
     saveFTA();
     ftaDirty = true;
+    if ($("#ftaCheckResult")) $("#ftaCheckResult").textContent = "Inputs changed; check again.";
     renderFTAResults();
   };
   $("#ftaForm").onchange = (ev) => {
@@ -2448,23 +2608,17 @@ function runButton(run) {
   return `<button class="link" data-record="${esc(run.id)}" data-kind="runs">${esc(run.name)}</button>`;
 }
 function renderOverview() {
-  const hazards = activeRecords("hazard"), runs = studyRecords.runs.filter(r => r.method !== "static_fta");
-  const actions = sortedActions(activeRecords("action"), {today:localDay()});
-  const gaps = (snapshot.requirement_coverage || []).filter(r=>r.status !== "covered" || r.incomplete.length);
-  const decisions = snapshot.coverage.filter(c=>c.decision !== "accepted" || c.decision_needs_review);
-  const project = snapshot.project, empty = !snapshot.entities.length;
-  if (empty) {
-    $("#content").innerHTML = `<div class="study-heading"><p class="eyebrow">${portable ? "Saved study" : "Working study"} · revision ${project.revision}</p><h1>${esc(project.title)}</h1><p>${esc(project.config?.operating_context || "Start by defining the system and the question this study must answer.")}</p></div><section class="overview-section"><h2>Start with the study boundary</h2><div class="setup-path"><button data-view="setup"><strong>1. Define context & criteria</strong><span>Operating context, governing standards and risk matrix.</span></button><button data-add="item"><strong>2. Build the system</strong><span>Create equipment and link the physical hierarchy.</span></button><button data-add="hazard"><strong>3. Record the first hazard</strong><span>Describe the boundary, mode and assessment owner.</span></button></div><p class="muted">No engineering records yet. Verification coverage and retained results will appear as the study develops.</p></section>`;
-    return;
+  const project=snapshot.project, hazards=activeRecords('hazard'), requirements=activeRecords('requirement');
+  const actions=sortedActions(activeRecords('action'),{today:localDay()});
+  if (!snapshot.entities.length) {
+    $('#content').innerHTML = head(esc(project.title),'<button class="primary" data-view="setup">Define study</button>') + '<div class="empty-workflow"><h2>Start with the system boundary</h2><p>Define the operating context and risk criteria, then create equipment and the first hazard.</p><div class="buttons"><button data-view="system">Build the system</button><button data-add="hazard">Add hazard</button></div></div>';return;
   }
-  $("#content").innerHTML = `<div class="study-heading"><p class="eyebrow">${portable ? "Saved study" : "Working study"} · revision ${project.revision}</p><h1>${esc(project.title)}</h1><p>${esc(project.config?.operating_context || "Define this study's operating context and system boundary in Project setup.")}</p></div>
-    <div class="study-totals"><button data-view="hazards"><strong>${hazards.length}</strong><span>Hazards</span></button><button data-view="ram"><strong>${runs.length}</strong><span>RAM runs</span></button><button data-view="evidence"><strong>${activeRecords("requirement").length}</strong><span>Requirements</span></button><button data-view="actions"><strong>${actions.length}</strong><span>Open actions</span></button></div>
-
-    <section class="overview-section"><div class="section-head"><h2>Needs attention</h2><button data-view="review">Open review</button></div><div class="attention-grid"><button data-view="evidence"><strong>${gaps.length}</strong><span>Verification items to review</span><small>Missing declarations or undefined scope</small></button><button data-view="review"><strong>${decisions.length}</strong><span>Hazard decisions to review</span><small>Pending or changed engineering basis</small></button><button data-view="actions"><strong>${actions.filter(a=>actionState(a,localDay()) === "overdue").length}</strong><span>Overdue actions</span><small>Open the register to assign or complete work</small></button></div></section>
-    <div class="overview-columns"><section class="overview-section"><div class="section-head"><h2>Hazard register</h2><button data-view="hazards">All hazards</button></div>${table(["Hazard", "Residual risk", "Evidence gaps"], hazards.slice(0,5).map(h=>{ const c=snapshot.coverage.find(c=>c.hazard===h.id); return row([`${link(h.id)}<p>${esc(h.title)}</p>`,esc(c.residual_risk),c.gaps.length]);}))}${hazards.length>5?`<p class="muted">Showing 5 of ${hazards.length} hazards.</p>`:''}</section>
-    <section class="overview-section"><div class="section-head"><h2>Next actions</h2><button data-view="actions">Action register</button></div>${actions.slice(0,4).map(a=>`<div class="next-action"><div>${link(a.id)} ${badge(actionState(a,localDay()), actionState(a,localDay())==='overdue'?'warn':'')}<p>${esc(a.title)}</p><small>${esc(a.data.owner || 'Unassigned')} · ${esc(a.data.due || 'Unscheduled')}</small></div><button data-edit="${esc(a.id)}">Edit</button></div>`).join('') || '<p class="empty">No open actions. Add an action when the study identifies follow-up work.</p>'}</section></div>
-    <section class="overview-section"><div class="section-head"><h2>Retained RAM studies</h2><button data-view="ram">Open RAM</button></div>${table(["Study / success condition", "Mission", "Reliability", "Inherent availability", "Basis"], runs.map(r=>row([`${runButton(r)}<p>${esc(r.config.success)}</p>`,`${r.config.mission_hours} h`,`${(r.result.mission_reliability*100).toFixed(4)}%`,`${(r.result.inherent_availability*100).toFixed(6)}%`,`Revision ${r.revision}${r.revision !== project.revision ? '<br><span class="muted">Historical</span>' : ''}`])))}<p class="muted">Results apply to their retained success model. Mission reliability, inherent availability and active repair are separate quantities.</p></section>`;
+  $('#content').innerHTML = `<div class="workspace-overview"><div class="overview-hero"><div><p class="eyebrow">${portable?'Saved study':'Study workspace'} / revision ${project.revision}</p><h1>${esc(project.title)}</h1><p>${esc(project.config.system_boundary || project.config.operating_context || 'Study boundary not defined.')}</p></div><button data-view="setup">Study definition</button></div><div class="study-summary"><button data-view="hazards"><strong>${hazards.length}</strong> Hazards</button><button data-view="requirements"><strong>${requirements.length}</strong> Requirements</button><button data-view="actions"><strong>${actions.length}</strong> Open actions</button><button data-view="baselines"><strong>${studyRecords.runs.length}</strong> Retained analyses</button></div>
+    <div class="overview-work"><section><div class="section-head"><h2>Continue hazard review</h2><button data-view="hazards">Open board →</button></div><div class="review-queue">${hazards.map((h,i)=>{const t=hazardTrace(snapshot,h.id),missing=t.requirements.filter(r=>!r.verifications.length).length;return `<button class="review-queue-item" data-review-hazard="${esc(h.id)}"><span class="queue-number">${String(i+1).padStart(2,'0')}</span><span><span class="record-id">${esc(h.id)}</span><strong>${esc(h.title)}</strong><span class="queue-meta">${missing} requirement${missing===1?'':'s'} without verification · ${esc(t.coverage?.decision || 'pending')} decision</span></span><span class="queue-risk">${esc(h.data.residual?.severity || '—')} / ${esc(h.data.residual?.frequency || '—')}<small>${esc(t.coverage?.residual_risk || 'unassessed')}</small></span><span aria-hidden="true">→</span></button>`;}).join('') || '<p class="empty">No hazards recorded. Add one to begin the review.</p>'}</div>
+    <section class="review-actions"><div class="section-head"><h2>Open actions</h2><button data-view="actions">Action register →</button></div>${actions.slice(0,4).map(a=>`<div class="next-action"><div>${link(a.id)}<p>${esc(a.title)}</p><small>Owner: ${esc(a.data.owner || 'Unassigned')} · Due: ${esc(a.data.due || 'Not scheduled')}</small></div><button data-edit="${esc(a.id)}">Edit action</button></div>`).join('') || '<p class="muted">No open actions.</p>'}</section></section>
+    <aside class="analysis-summary"><div class="section-head"><h2>Retained analysis</h2><button data-view="ram">RAM →</button></div>${studyRecords.runs.map(r=>`<div class="run-summary">${runButton(r)}<p>${r.method==='static_fta'?'Static fault tree':'RBD / RAM'} · revision ${r.revision}${r.revision!==project.revision?' · historical':''}</p>${r.method!=='static_fta'?`<dl><div><dt>Mission reliability · ${r.config.mission_hours} h</dt><dd>${(r.result.mission_reliability*100).toFixed(4)}%</dd></div><div><dt>Inherent availability</dt><dd>${(r.result.inherent_availability*100).toFixed(6)}%</dd></div></dl>`:''}</div>`).join('') || '<p class="empty">No retained analyses. Build a success model under RAM / RBD or a fault tree.</p>'}<div class="workspace-tools"><h3>Develop the study</h3><button data-view="system">System & functions →</button><button data-view="evidence">Verification coverage →</button><button data-view="review">Technical review →</button></div></aside></div></div>`;
 }
+
 function renderDecisionReview() {
   const actions = activeRecords("action").filter(a => !a.data.completion_evidence);
   $("#content").innerHTML = head("Review gaps & actions", '<button data-view="baselines">Baselines & history</button>') +
@@ -2556,7 +2710,7 @@ async function showImportance(id, button) {
 async function renderRAM() {
   if (ramEditing && !portable) return renderRAMEditor();
   const runs = studyRecords.runs.filter(r => r.method !== "static_fta");
-  $("#content").innerHTML = head("Reliability, availability & maintainability", portable ? "" : '<button id="newRAM">New RAM study</button>') +
+  $("#content").innerHTML = head("Reliability, availability & maintainability", portable ? "" : `<div class="buttons">${analysisDraft?.tree || analysisDraft?.name ? '<button id="resumeRAM">Continue draft</button>' : ""}<button id="newRAM">New RAM study</button></div>`) +
     `<div class="run-list" aria-label="Retained RAM studies">${runs.map(r => `<button data-record="${esc(r.id)}" data-kind="runs" class="${r.id === currentRun?.id ? "active" : ""}"><strong>${esc(r.name)}</strong><span>${r.config.mission_hours} h mission · revision ${r.revision}</span></button>`).join("")}</div><div id="ramRunBody"><p role="status">${runs.length ? "Opening retained results…" : "No calculated RAM runs in this study."}</p></div>`;
   if (!runs.length) { $("#ramRunBody").innerHTML = `<div class="empty-workflow"><h2>Define what successful operation means</h2><p>Choose physical components and arrange series / active-parallel success logic. Each component needs a failure rate, active repair time, operating mode and a dependency review.</p>${portable ? "" : '<div class="buttons"><button data-new-ram class="primary">Build a RAM study</button><button data-add="item">Add a component</button></div>'}<p class="muted">This solver covers independent exponential components. Standby, common-cause and shared-repair models require a different method.</p></div>`; return; }
   const project = snapshot.project.id, request = ++runRequest;
@@ -2582,9 +2736,11 @@ function writeRoute() {
   if (!snapshot || restoringRoute) return;
   const params = new URLSearchParams({view});
   if (selected) params.set("record", selected);
+  if (view === "hazards" && reviewFocus) params.set("focus", reviewFocus);
   if (view === "studies") { params.set("method", method); if (method === "bowtie") params.set("hazard", bowtieHazard); }
   if (view === "ram" && currentRun) params.set("run", currentRun.id);
   if (scope && !["overview", "ram", "review"].includes(view)) params.set("scope", scope);
+  if (["system","requirements"].includes(view)) params.set("kind", kind);
   if (view === "evidence") { params.set("kind", kind); params.set("tab", evidenceView); }
   if (view === "review") { params.set("tab",reviewTab); if (reviewTarget) params.set("focus",reviewTarget); }
   if (view === "actions") { params.set("filter",actionFilter); if (actionOwner) params.set("owner",actionOwner); }
@@ -2593,8 +2749,9 @@ function writeRoute() {
 }
 async function readRoute() {
   const p = new URLSearchParams(location.hash.slice(1));
-  view = ["overview", "hazards", "studies", "ram", "evidence", "actions", "review", "baselines", "setup", "practice"].includes(p.get("view")) ? p.get("view") : "overview";
+  view = ["overview", "hazards", "studies", "ram", "evidence", "actions", "review", "baselines", "setup", "practice", "system", "requirements"].includes(p.get("view")) ? p.get("view") : "overview";
   selected = p.get("record") || ""; scope = p.get("scope") || "";
+  reviewFocus = view === "hazards" ? p.get("focus") || "" : "";
   reviewTab = ["technical","trace","decisions"].includes(p.get("tab")) ? p.get("tab") : "technical"; reviewTarget = p.get("focus") || ""; reviewCategory = "";
   kind = p.get("kind") || "requirement";
   evidenceView = p.get("tab") === "records" ? "records" : "coverage";
@@ -2608,6 +2765,7 @@ async function readRoute() {
 window.addEventListener("popstate", async () => {
   if (location.hash === "#main") return;
   if (!snapshot) return;
+  if (editorDocked && $('#editor').open) { writeRoute(); notice('Save or cancel the current edit before switching records.'); return; }
   restoringRoute = true;
   try { await readRoute(); renderTree(); render(); } catch (error) { notice(error.message); }
   finally { restoringRoute = false; }
@@ -2662,7 +2820,7 @@ async function reconcileDraft() {
     if (remote) throw new Error('This ID now exists. Keep your draft and choose another stable ID.');
     editorRevision = latest.project.revision;
     $('#entityError').textContent = 'Latest revision checked. Your new record can now be saved; the server will recheck all relationships.';
-    $('#conflictFields').innerHTML = '';
+    $('#draftRecovery').remove();
     return;
   }
   if (!remote) throw new Error('The record no longer exists. Download your draft before leaving this editor.');
@@ -2685,7 +2843,7 @@ async function saveReconciled() {
   const button = $('#saveReconciled'); button.disabled = true;
   try {
     await mutate({entity:merged},latest.project.revision);
-    selected = merged.id; draftDirty = false; $('#editor').close(); render(); notice(`Reconciled and saved ${merged.id}.`);
+    selectSavedRecord(merged); draftDirty = false; $('#editor').close(); render(); notice(`Reconciled and saved ${merged.id}.`);
   } catch (error) {
     $('#entityError').textContent = error.message + ' Compare again to include any newer changes.';
   } finally { button.disabled = false; }

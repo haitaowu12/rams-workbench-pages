@@ -1,9 +1,9 @@
 {
-  "version": "0.3.0-dev2",
+  "version": "0.4.0",
   "files": [
     {
       "path": "rams/__init__.py",
-      "sha256": "b3027c9132cce0b2ed88b4d8a7a485ca93c7eb352774115acff0fa342a71ad8d"
+      "sha256": "c0884dae5ba4ff5588cb21f7a887e4e544413a59d496bca95cab41384f44ba99"
     },
     {
       "path": "rams/__main__.py",
@@ -35,11 +35,11 @@
     },
     {
       "path": "rams/repository.py",
-      "sha256": "e0b6ea00c52ebdf51922f8d394ebffa71f40a30a618ba1787000630182480ca5"
+      "sha256": "1a3416acd217ddeed7c7ecac7dacc17aad48572aecdfaace9176c770410a4431"
     },
     {
       "path": "rams/service.py",
-      "sha256": "3bfd2ba2d7beecc4e954943d83322b7b20ca057874faac13e004834e0666533d"
+      "sha256": "6f8248a7a74e7cdad8adeaf07ade0884a9f70c28c26b6461c84eb1be1276ddc4"
     },
     {
       "path": "rams/storage.py",
@@ -47,7 +47,7 @@
     },
     {
       "path": "rams/study_output.py",
-      "sha256": "636638d6f9d31b22c4165fefc6dc09bb67eaa3993879b7a6c2fe7ed0509e443a"
+      "sha256": "0ff02226d0c853f97ae295515b8730325c69e880561425eb5163c29797ecc628"
     },
     {
       "path": "rams/technical_review.py",
@@ -91,11 +91,11 @@
     },
     {
       "path": "web/app.js",
-      "sha256": "1f2acfa7b180bcf8a1728f5857dbd65b11032743cab9169e3d784eb5bbfa3f93"
+      "sha256": "ac400ca7a0ea33c13879a1b75ab5e5924bf151470c9a6776ce7808cda63d9931"
     },
     {
       "path": "web/browser-client.js",
-      "sha256": "bbb77d7466b2e6495629ea934952f581dddbbf2908864bacfe524f6f824426a2"
+      "sha256": "fc24e7f49e33c8eb0405c6e865498d6f4236f3732993e0766e37ea11a545b3f5"
     },
     {
       "path": "web/browser-python.mjs",
@@ -107,7 +107,39 @@
     },
     {
       "path": "web/browser-worker.js",
-      "sha256": "1673f8113a7033b8f4961e678faa20fc1dd8d08fa7820bf81d95c5b9859f0c52"
+      "sha256": "22c5925f092e95d46e832dfb636dd80d495bbccdd40d86121ec29f9ae29137e5"
+    },
+    {
+      "path": "web/fonts/ibm-plex-sans-LICENSE.txt",
+      "sha256": "d0283623ef57e722fd0eb688a8041589670c608ab780cd3612d06ba6f153d3fd"
+    },
+    {
+      "path": "web/fonts/ibm-plex-sans-latin-400-normal.woff2",
+      "sha256": "3b646991d30055a93a4ecc499713d4347953a74a947ecab435ab72070cbdab0e"
+    },
+    {
+      "path": "web/fonts/ibm-plex-sans-latin-600-normal.woff2",
+      "sha256": "8960851d691c054ed38e259bdcf1a6190d157b4203ed5bb32c632a863fb8ec2f"
+    },
+    {
+      "path": "web/guide/chapters.json",
+      "sha256": "b95e0acb5402dc0fea7f99f8e5d1eef6a4c894d12bf462140e46442a10af11dd"
+    },
+    {
+      "path": "web/guide/guide.css",
+      "sha256": "3b9620b8a122b5ca8649a4fcc31ccab0080b9d214f6db7db9a58b66928851e4b"
+    },
+    {
+      "path": "web/guide/guide.js",
+      "sha256": "07b4fa7e2ec108908a6c04cdf6dea9b25d841235819d52323bf9a9c53719d369"
+    },
+    {
+      "path": "web/guide/index.html",
+      "sha256": "2d0c767a77977a99902f9f6801d4ee3ede53d53d74c1fe3f286464a69428e4c6"
+    },
+    {
+      "path": "web/guide/transcript.html",
+      "sha256": "31f17b231968efa752753a5c4706b1217c35bb786de189c3b7609143176b758d"
     },
     {
       "path": "web/icons/chart-line.svg",
@@ -135,11 +167,11 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "e6f362dc0d0f6e71482baa0df87d4377d52b7f46c3ef5931b05d916246756399"
+      "sha256": "c53e2737387ebf9ffecbd414eb41dcb92365badad9dd55bc8e8c6b32e5a703dc"
     },
     {
       "path": "web/style.css",
-      "sha256": "04db0221c995c6383721a73cd2cadfd3b545e6d3128b964928eaa716fee1a10e"
+      "sha256": "c633a8d807908bbf57446cdb2f6cd84d157fa749bc95cb06c5725274e6254954"
     },
     {
       "path": "web/transport.js",
@@ -147,7 +179,7 @@
     },
     {
       "path": "web/workflow-model.js",
-      "sha256": "a6b8fc4054c6b2406df3878a1eed40166122f1963a322725068b50ce7f606c29"
+      "sha256": "61610a60c155a80bbc523f5ed3babe6481b2c58c27e6f137dcf6ce786e94cefa"
     },
     {
       "path": "vendor/__init__.py",
@@ -180,7 +212,7 @@
   ],
   "archive": {
     "path": "application-source.zip",
-    "sha256": "339d9e3568d96e2f2f7f086e314b4ea340c98964e1622f800b0fe9c888547e5c",
-    "bytes": 128756
+    "sha256": "f2a1fc79d2f787c190be798c084e1184ed966683c49f8b946b9c693242472191",
+    "bytes": 202537
   }
 }

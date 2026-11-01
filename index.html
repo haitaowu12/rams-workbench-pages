@@ -11,17 +11,18 @@
   <body>
     <a class="skip" href="#main">Skip to workspace</a>
     <header>
-      <strong class="brand">RAMS Workbench</strong
+      <strong class="brand"><span class="brand-mark" aria-hidden="true">R</span>RAMS Workbench</strong
       ><label class="sr-only" for="projects">Project</label
       ><select id="projects">
         <option value="">Select a project</option></select
       ><span id="revision"></span>
       <div class="header-actions">
-        <button id="export">Download study</button>
+        <a class="guide-link" href="./guide/" target="_blank" rel="noopener" aria-label="User guide (opens in a new tab)">User guide</a>
         <details class="project-menu">
           <summary>Project menu</summary>
           <div>
-            <button data-view="setup">Project setup</button>
+            <button id="export">Download study</button>
+            <button data-view="setup">Study definition</button>
             <button data-view="practice">Methods & study workflow</button>
             <button data-view="baselines">Baselines & history</button>
             <button id="reload">Reload project</button>
@@ -32,7 +33,7 @@
             <button id="restoreWorkspace">Restore workspace backup</button>
             <button id="previousWorkspace">Download previous workspace</button>
             <input id="restoreFile" type="file" accept=".sqlite3,.db,application/vnd.sqlite3" hidden>
-            <a href="./help.html">Browser help & downloads</a>
+            <a class="button" href="./guide/#1-open-the-workbench-and-protect-your-work" target="_blank" rel="noopener">Browser storage & recovery help</a>
             <hr>
             <button id="create">New project</button>
             <button data-import-project>Import project</button>
@@ -42,16 +43,32 @@
         </details>
       </div>
     </header>
+    <div id="studyProvenance" hidden>Fictional station study · parameters and evidence are synthetic.</div>
     <div id="notice" role="status" aria-live="polite"></div>
     <div class="shell">
-      <div class="study-navigation">
+      <button id="toggleNavigation" class="nav-toggle" aria-expanded="false" aria-controls="studyNavigation">Study navigation</button>
+      <div class="study-navigation" id="studyNavigation">
         <nav class="app-nav" aria-label="Study">
-          <button data-view="overview">Overview</button>
-          <button data-view="hazards">Safety</button>
-          <button data-view="ram">RAM</button>
-          <button data-view="evidence">Evidence</button>
+          <button data-view="overview">Study workspace</button>
+          <p class="nav-group">Define</p>
+          <button data-view="setup">Study definition</button>
+          <button data-view="system">System &amp; functions</button>
+          <p class="nav-group">Analyze</p>
+          <button data-view="hazards">Hazard review</button>
+          <button data-method="hazop">HAZOP</button>
+          <button data-method="fmeca">FMEA / FMECA</button>
+          <button data-method="bowtie">Bow tie</button>
+          <button data-method="fta">Fault trees</button>
+          <button data-view="ram">RAM / RBD</button>
+          <p class="nav-group">Resolve &amp; review</p>
+          <button data-view="requirements">Requirements</button>
+          <button data-view="evidence">Verification</button>
           <button data-view="actions">Actions</button>
-          <button data-view="review">Review</button>
+          <button data-view="review">Review &amp; trace</button>
+          <button data-view="baselines">Baselines &amp; history</button>
+          <p class="nav-group">Reference</p>
+          <button data-view="practice">Method guide</button>
+          <button data-library>All records</button>
         </nav>
         <details class="scope-menu">
           <summary id="scopeLabel">Scope: all systems</summary>
@@ -66,12 +83,19 @@
         <section id="workspace">
           <div id="content"><p role="status">Opening workspace…</p><noscript><p>Enable JavaScript to open the workspace.</p></noscript></div>
           <section id="inspector" aria-label="Selected record"></section>
+          <aside id="reviewDock" aria-label="Record workspace" hidden><div id="reviewDetail"></div><div id="reviewEditorSlot"></div></aside>
         </section>
         <footer>
-          <span id="studyMode">Local workspace</span> · Review states are declarations; project acceptance remains open.
+          <span id="studyMode">Local workspace</span>
+          <span id="appVersion"></span>
         </footer>
       </main>
     </div>
+    <dialog id="recordContext" aria-labelledby="contextTitle">
+      <div class="context-header"><h2 id="contextTitle">Related record</h2><button id="closeContext">Return to workspace</button></div>
+      <nav id="contextTrail" aria-label="Related record path"></nav>
+      <div id="contextRecord"></div>
+    </dialog>
     <dialog id="editor" aria-labelledby="editorTitle">
       <form id="entityForm">
         <div class="dialog-head">

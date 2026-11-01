@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Open and save safely",
+    "start": 0.0,
+    "end": 23.814
+  },
+  {
+    "title": "Start with the station example",
+    "start": 23.814,
+    "end": 48.461
+  },
+  {
+    "title": "Define the study",
+    "start": 48.461,
+    "end": 76.044
+  },
+  {
+    "title": "Model equipment and functions",
+    "start": 76.044,
+    "end": 100.001
+  },
+  {
+    "title": "Follow the hazard board",
+    "start": 100.001,
+    "end": 128.564
+  },
+  {
+    "title": "Add a verification declaration",
+    "start": 128.564,
+    "end": 160.48
+  },
+  {
+    "title": "Record HAZOP examinations",
+    "start": 160.48,
+    "end": 189.064
+  },
+  {
+    "title": "Develop failure analysis",
+    "start": 189.064,
+    "end": 216.925
+  },
+  {
+    "title": "Allocate bow-tie controls",
+    "start": 216.925,
+    "end": 246.552
+  },
+  {
+    "title": "Check and retain a fault-tree result",
+    "start": 246.552,
+    "end": 276.938
+  },
+  {
+    "title": "Prepare and calculate RAM",
+    "start": 276.938,
+    "end": 321.993
+  },
+  {
+    "title": "Assign and complete actions",
+    "start": 321.993,
+    "end": 349.776
+  },
+  {
+    "title": "Recover a competing draft",
+    "start": 349.776,
+    "end": 374.276
+  },
+  {
+    "title": "Review and freeze a baseline",
+    "start": 374.276,
+    "end": 403.465
+  },
+  {
+    "title": "Share the right output",
+    "start": 403.465,
+    "end": 431.054
+  },
+  {
+    "title": "Restore and continue independently",
+    "start": 431.054,
+    "end": 458.109
+  }
+]

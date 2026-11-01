@@ -12,8 +12,12 @@ export class BrowserClient {
     this.worker.onmessage=({data})=>this.receive(data);
     this.worker.onerror=event=>this.stop(event.message||'The analysis engine stopped.');
     this.worker.onmessageerror=()=>this.stop('The analysis response could not be read.');
-    this.startTimer=setTimeout(()=>this.stop('The analysis engine did not start. Check the connection, then reload.'),90000);
+    this.watchStartup();
     this.update('Opening the browser workspace…');
+  }
+  watchStartup() {
+    clearTimeout(this.startTimer);
+    this.startTimer=setTimeout(()=>this.stop('The analysis engine did not finish starting. Check the connection, then reload.'),180000);
   }
   update(message) {
     let banner=document.getElementById('browserStatus');
@@ -40,7 +44,7 @@ export class BrowserClient {
     if(mode)mode.textContent=this.state.mode==='memory'?'Browser workspace · tab only':'Browser workspace';
   }
   receive(data) {
-    if(data.event==='progress'){this.update(data.message);return;}
+    if(data.event==='progress'){this.watchStartup();this.update(data.message);return;}
     if(data.event==='ready') {
       clearTimeout(this.startTimer);this.state=data.storage;this.epoch=data.storage.epoch??0;this.update();this.resolveReady();return;
     }

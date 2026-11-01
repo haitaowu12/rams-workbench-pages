@@ -27,9 +27,11 @@ async function restore(row) {
 }
 const ready=(async()=>{
   await store.open();initialRow=await store.load();
-  self.postMessage({event:'progress',message:'Loading the analysis engine…'});
+  self.postMessage({event:'progress',message:'Preparing the workbench… First load may take longer. You can open the user guide while it starts.'});
   python=await loadPyodide({indexURL:new URL('pyodide/',base).href});
+  self.postMessage({event:'progress',message:'Opening device storage…'});
   await python.loadPackage('sqlite3');
+  self.postMessage({event:'progress',message:'Loading study methods…'});
   const manifest=await(await fetch(new URL('python-files.json',base))).json();
   const response=await fetch(new URL(manifest.archive.path,base));
   if(!response.ok)throw Error('Required analysis files are unavailable. Reload after checking the connection.');
@@ -40,6 +42,7 @@ const ready=(async()=>{
   python.runPython("import io,zipfile\nwith zipfile.ZipFile(io.BytesIO(bytes(app_archive))) as archive: archive.extractall('/app')\n");
   python.globals.delete('app_archive');
   python.runPython("import sys\nsys.path.insert(0,'/app')\nfrom rams.browser import request as browser_request, replace_workspace as browser_replace_workspace, validate_workspace as browser_validate_workspace, workspace_bytes as browser_workspace_bytes\n");
+  self.postMessage({event:'progress',message:'Opening your saved workspace…'});
   await restore(initialRow);
   self.postMessage({event:'ready',storage:status()});
 })().catch(error=>{
@@ -69,7 +72,7 @@ self.onmessage=({data:message})=>{queue=queue.then(async()=>{
       const previous=await store.recovery();if(!previous?.bytes)throw Error('There is no earlier workspace retained for recovery.');
       response={status:200,content_type:'application/vnd.sqlite3',filename:'rams-previous-workspace.sqlite3',body:previous.bytes};
     } else {
-      const mutation=message.body!==undefined&&!['/api/import-preview','/api/rbd-diagram'].includes(message.path);
+      const mutation=message.body!==undefined&&!['/api/import-preview','/api/rbd-diagram','/api/check-analysis','/api/check-fault-tree'].includes(message.path);
       if(mutation)requireWorkspaceEpoch(message.epoch,epoch);
       const serialized=JSON.stringify({path:message.path,body:message.body});
       if(new TextEncoder().encode(serialized).byteLength>20_000_000)throw Error('Request exceeds the 20 MB input limit.');
