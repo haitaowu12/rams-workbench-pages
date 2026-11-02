@@ -1,13 +1,7 @@
 {
-  "version": "0.4.0",
-  "source_commit": "ce15ec38c602ac294e2cf095fb1fff24f8dd6070",
+  "source_commit": "09f6bc6e1524d83948e16aa323f1989b46bbb7d6",
   "hosting": "GitHub Pages branch publishing",
   "files": [
-    {
-      "path": ".nojekyll",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
     {
       "path": "RUNTIME-NOTICES.txt",
       "bytes": 649,
@@ -20,8 +14,8 @@
     },
     {
       "path": "application-source.zip",
-      "bytes": 202537,
-      "sha256": "f2a1fc79d2f787c190be798c084e1184ed966683c49f8b946b9c693242472191"
+      "bytes": 202596,
+      "sha256": "cfb045baa47ffce81ffcbf7579c88e61b79cdbea3322fd6e0b22b4826ffa3ce9"
     },
     {
       "path": "browser-client.js",
@@ -46,7 +40,7 @@
     {
       "path": "example-study.json",
       "bytes": 81188,
-      "sha256": "12045bddc077af789d87dadc06d3c261b6c1e2a3d4f2f911762c4a3f17f7ea92"
+      "sha256": "00980e466e8086b935a835b3c2807ad40b195bc0422273ebcbc5bd7636d092e7"
     },
     {
       "path": "fonts/ibm-plex-sans-LICENSE.txt",
@@ -260,8 +254,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 6606,
-      "sha256": "36efb9d2c5992222dd17025bf101f37e1b344efc63c2e57db2277ed6f0dacf14"
+      "bytes": 6698,
+      "sha256": "3515564126f510af0cfc2e1501242e8ee1ae049a9eb1e747fa72070f91990e95"
     },
     {
       "path": "licenses/CPython/Doc/license.rst",
@@ -391,22 +385,22 @@
     {
       "path": "python-files.json",
       "bytes": 7435,
-      "sha256": "9214328e395c7cad73234c1df58fd7ad854d4626e69463ce67f6064532711ffe"
+      "sha256": "b3d0bc3c7a3c22b17708ac7b3e7b64b867e5ec91b492018490c4dd98543da25e"
     },
     {
       "path": "rams-workbench.zip",
-      "bytes": 13274417,
-      "sha256": "66eafd32846c006929704160ba58183bcfdf682e6d7a61deef48623c8086aac1"
+      "bytes": 13274476,
+      "sha256": "9bb7af94c0f8d9c97c87694a9f152ca72f740276eecbb2a54e160caa3b9ef014"
     },
     {
       "path": "rams-workbench.zip.sha256",
       "bytes": 85,
-      "sha256": "039ad13c8f4d5443a7b7f8afa8357281763fae58a6b3665da919b886d5020e13"
+      "sha256": "3f8f9610936c667a81668cea92b8833e4c53cf2e2907696974d02175cf29fd94"
     },
     {
       "path": "study.html",
-      "bytes": 739889,
-      "sha256": "339b3758527b58cc9820ab21a7b73d99d436bea9c60b64172caeb89d4d7a09bc"
+      "bytes": 739981,
+      "sha256": "c677b001bc3207e4a141632ec62aa846682af9e3f08c317dd341a8acc339c242"
     },
     {
       "path": "style.css",

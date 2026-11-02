@@ -167,7 +167,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "c53e2737387ebf9ffecbd414eb41dcb92365badad9dd55bc8e8c6b32e5a703dc"
+      "sha256": "9334d462c13eaba850a890f683fe343682c8378a527f2afeca7210aff96fd71f"
     },
     {
       "path": "web/style.css",
@@ -212,7 +212,7 @@
   ],
   "archive": {
     "path": "application-source.zip",
-    "sha256": "f2a1fc79d2f787c190be798c084e1184ed966683c49f8b946b9c693242472191",
-    "bytes": 202537
+    "sha256": "cfb045baa47ffce81ffcbf7579c88e61b79cdbea3322fd6e0b22b4826ffa3ce9",
+    "bytes": 202596
   }
 }
