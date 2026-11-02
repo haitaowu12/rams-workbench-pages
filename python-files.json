@@ -123,7 +123,7 @@
     },
     {
       "path": "web/guide/chapters.json",
-      "sha256": "b95e0acb5402dc0fea7f99f8e5d1eef6a4c894d12bf462140e46442a10af11dd"
+      "sha256": "4f971c3e1a21b015a503f0ca3b8b60d7cd05e194093cb287fad6743a4c000540"
     },
     {
       "path": "web/guide/guide.css",
@@ -135,11 +135,11 @@
     },
     {
       "path": "web/guide/index.html",
-      "sha256": "2d0c767a77977a99902f9f6801d4ee3ede53d53d74c1fe3f286464a69428e4c6"
+      "sha256": "c74ea53919b8ec2b1e14c0edc5aa27b2b099f792cf9e5566bc352c963511b0fb"
     },
     {
       "path": "web/guide/transcript.html",
-      "sha256": "31f17b231968efa752753a5c4706b1217c35bb786de189c3b7609143176b758d"
+      "sha256": "ba80ec7801dc40008c96d87d58a916faa021d2ee7518ccd3125fd64296fcf3ac"
     },
     {
       "path": "web/icons/chart-line.svg",
@@ -212,7 +212,7 @@
   ],
   "archive": {
     "path": "application-source.zip",
-    "sha256": "cfb045baa47ffce81ffcbf7579c88e61b79cdbea3322fd6e0b22b4826ffa3ce9",
-    "bytes": 202596
+    "sha256": "23fdfc3b276d36401ace11b59912492000b876c12d1c8237f2eaae9f60c0d3c3",
+    "bytes": 202497
   }
 }

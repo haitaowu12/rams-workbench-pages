@@ -1,5 +1,5 @@
 {
-  "source_commit": "09f6bc6e1524d83948e16aa323f1989b46bbb7d6",
+  "source_commit": "45fa7f87f258668c0620c4a78029870eec314826",
   "hosting": "GitHub Pages branch publishing",
   "files": [
     {
@@ -14,8 +14,8 @@
     },
     {
       "path": "application-source.zip",
-      "bytes": 202596,
-      "sha256": "cfb045baa47ffce81ffcbf7579c88e61b79cdbea3322fd6e0b22b4826ffa3ce9"
+      "bytes": 202497,
+      "sha256": "23fdfc3b276d36401ace11b59912492000b876c12d1c8237f2eaae9f60c0d3c3"
     },
     {
       "path": "browser-client.js",
@@ -59,13 +59,13 @@
     },
     {
       "path": "guide/captions.vtt",
-      "bytes": 8761,
-      "sha256": "7a30b1693a0d9775388e4e05a412ab050d8e8185fbabbd455c27565703722c60"
+      "bytes": 8825,
+      "sha256": "ebeb2250635a688e8d6168802318243fdf0a2130d8b804762011203dd11d88f0"
     },
     {
       "path": "guide/chapters.json",
-      "bytes": 1482,
-      "sha256": "b95e0acb5402dc0fea7f99f8e5d1eef6a4c894d12bf462140e46442a10af11dd"
+      "bytes": 1470,
+      "sha256": "4f971c3e1a21b015a503f0ca3b8b60d7cd05e194093cb287fad6743a4c000540"
     },
     {
       "path": "guide/guide.css",
@@ -199,18 +199,18 @@
     },
     {
       "path": "guide/index.html",
-      "bytes": 21968,
-      "sha256": "2d0c767a77977a99902f9f6801d4ee3ede53d53d74c1fe3f286464a69428e4c6"
+      "bytes": 21853,
+      "sha256": "c74ea53919b8ec2b1e14c0edc5aa27b2b099f792cf9e5566bc352c963511b0fb"
     },
     {
       "path": "guide/transcript.html",
       "bytes": 9696,
-      "sha256": "31f17b231968efa752753a5c4706b1217c35bb786de189c3b7609143176b758d"
+      "sha256": "ba80ec7801dc40008c96d87d58a916faa021d2ee7518ccd3125fd64296fcf3ac"
     },
     {
       "path": "guide/walkthrough.mp4",
-      "bytes": 12569173,
-      "sha256": "b10fc316575a14e55af6c2d4cc7a67cae7ba06506ca8d1ae180fe6f8a44accf4"
+      "bytes": 13040412,
+      "sha256": "0ce85e0ad523a350de754b608fb53b087388868f9a72daf39821c9c94ffe8715"
     },
     {
       "path": "help.html",
@@ -385,17 +385,17 @@
     {
       "path": "python-files.json",
       "bytes": 7435,
-      "sha256": "b3d0bc3c7a3c22b17708ac7b3e7b64b867e5ec91b492018490c4dd98543da25e"
+      "sha256": "1b68492282c7558af812bcb607b57bbfe088e1de3a4642b15540dcc6dc53f3e9"
     },
     {
       "path": "rams-workbench.zip",
-      "bytes": 13274476,
-      "sha256": "9bb7af94c0f8d9c97c87694a9f152ca72f740276eecbb2a54e160caa3b9ef014"
+      "bytes": 13705358,
+      "sha256": "4cdb76fb71557ea5aed8caf8209bf742438bba0ac3b990699d1ef6bb1a3085cd"
     },
     {
       "path": "rams-workbench.zip.sha256",
       "bytes": 85,
-      "sha256": "3f8f9610936c667a81668cea92b8833e4c53cf2e2907696974d02175cf29fd94"
+      "sha256": "0314bb53b3f5aee45a8c1f143024f7210a2c4a43ba104d4e29941297606d9262"
     },
     {
       "path": "study.html",
