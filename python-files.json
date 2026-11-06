@@ -135,7 +135,7 @@
     },
     {
       "path": "web/guide/guide.css",
-      "sha256": "ddd5843790fdd052165e61b1fe5534a15be513986e76eadf065ed6e55638cf5b"
+      "sha256": "56447d1bb234ddad0184565578e40a0eca98cc789a8c47fda5d8d55693bcd235"
     },
     {
       "path": "web/guide/guide.js",
@@ -224,7 +224,7 @@
   ],
   "archive": {
     "path": "application-source.zip",
-    "sha256": "24fe5b06427ef53b629c2af84e3d280f3599554849f3a31ad1c96038b75b197d",
-    "bytes": 210139
+    "sha256": "3e5856d110c51b798399a1f9811438522028ea6304867236a60e4099263dd283",
+    "bytes": 210184
   }
 }

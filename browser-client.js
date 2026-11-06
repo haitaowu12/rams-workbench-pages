@@ -1,4 +1,4 @@
-import {WorkspaceStore} from './browser-store.mjs?v=26233652cd1b3dd2';
+import {WorkspaceStore} from './browser-store.mjs?v=94de19e150622cd6';
 const saveFile=(name,bytes,type='application/vnd.sqlite3')=>{
   const url=URL.createObjectURL(new Blob([bytes],{type})),a=document.createElement('a');
   a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -8,7 +8,7 @@ export class BrowserClient {
     this.base=base;this.pending=new Map();this.next=0;this.epoch=0;this.state={mode:'loading'};this.changed=false;
     this.ready=new Promise((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});
     this.ready.catch(()=>{});
-    this.worker=new Worker(new URL('browser-worker.js?v=26233652cd1b3dd2',base),{type:'module'});
+    this.worker=new Worker(new URL('browser-worker.js?v=94de19e150622cd6',base),{type:'module'});
     this.worker.onmessage=({data})=>this.receive(data);
     this.worker.onerror=event=>this.stop(event.message||'The analysis engine stopped.');
     this.worker.onmessageerror=()=>this.stop('The analysis response could not be read.');

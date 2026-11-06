@@ -1,6 +1,6 @@
-import "./unified/engineering-view.js?v=26233652cd1b3dd2";
-import { actionState, sortedActions, mergeDraft, ramInputChecklist, hazardTrace, workAreaFor } from "./workflow-model.js?v=26233652cd1b3dd2";
-import { request, browserRuntime, runtimeReady, uiStorage } from "./transport.js?v=26233652cd1b3dd2";
+import "./unified/engineering-view.js?v=94de19e150622cd6";
+import { actionState, sortedActions, mergeDraft, ramInputChecklist, hazardTrace, workAreaFor } from "./workflow-model.js?v=94de19e150622cd6";
+import { request, browserRuntime, runtimeReady, uiStorage } from "./transport.js?v=94de19e150622cd6";
 const portable = document.getElementById("study-data") ? JSON.parse(document.getElementById("study-data").textContent) : null;
 if (portable) document.body.classList.add("snapshot-mode");
 let reviewFocus = "", reviewFilter = "all", editorDocked = false, reviewOpenerId = "";

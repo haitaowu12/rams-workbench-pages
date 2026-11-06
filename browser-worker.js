@@ -1,6 +1,6 @@
-import {pythonCall as callPython} from './browser-python.mjs?v=26233652cd1b3dd2';
-import {loadPyodide} from './pyodide/pyodide.mjs?v=26233652cd1b3dd2';
-import {WorkspaceStore,WorkspaceConflict,MAX_WORKSPACE_BYTES,requireWorkspaceEpoch} from './browser-store.mjs?v=26233652cd1b3dd2';
+import {pythonCall as callPython} from './browser-python.mjs?v=94de19e150622cd6';
+import {loadPyodide} from './pyodide/pyodide.mjs?v=94de19e150622cd6';
+import {WorkspaceStore,WorkspaceConflict,MAX_WORKSPACE_BYTES,requireWorkspaceEpoch} from './browser-store.mjs?v=94de19e150622cd6';
 const base=new URL('./',import.meta.url);
 const store=new WorkspaceStore('rams-workbench:'+base.pathname);
 let python, revision=0, epoch=0, initialRow, stage=null;
@@ -32,7 +32,7 @@ const ready=(async()=>{
   self.postMessage({event:'progress',message:'Opening device storage…'});
   await python.loadPackage('sqlite3');
   self.postMessage({event:'progress',message:'Loading study methods…'});
-  const manifest=await(await fetch(new URL('python-files.json?v=26233652cd1b3dd2',base))).json();
+  const manifest=await(await fetch(new URL('python-files.json?v=94de19e150622cd6',base))).json();
   const archiveURL=new URL(manifest.archive.path,base);
   archiveURL.searchParams.set('v',manifest.archive.sha256);
   const response=await fetch(archiveURL);
