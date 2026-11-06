@@ -2,81 +2,86 @@
   {
     "title": "Open and save safely",
     "start": 0.0,
-    "end": 24.383
+    "end": 15.05
   },
   {
     "title": "Start with the station example",
-    "start": 24.383,
-    "end": 53.0
+    "start": 15.05,
+    "end": 33.883
+  },
+  {
+    "title": "Explore the Crossrail example",
+    "start": 33.883,
+    "end": 61.633
   },
   {
     "title": "Define the study",
-    "start": 53.0,
-    "end": 79.6
+    "start": 61.633,
+    "end": 81.217
   },
   {
     "title": "Model equipment and functions",
-    "start": 79.6,
-    "end": 104.467
+    "start": 81.217,
+    "end": 97.017
   },
   {
     "title": "Follow the hazard board",
-    "start": 104.467,
-    "end": 134.517
+    "start": 97.017,
+    "end": 116.317
   },
   {
     "title": "Add a verification declaration",
-    "start": 134.517,
-    "end": 167.017
+    "start": 116.317,
+    "end": 142.117
   },
   {
     "title": "Record HAZOP examinations",
-    "start": 167.017,
-    "end": 195.983
+    "start": 142.117,
+    "end": 162.7
   },
   {
     "title": "Develop failure analysis",
-    "start": 195.983,
-    "end": 225.267
+    "start": 162.7,
+    "end": 178.733
   },
   {
     "title": "Allocate bow-tie controls",
-    "start": 225.267,
-    "end": 256.533
+    "start": 178.733,
+    "end": 198.433
   },
   {
     "title": "Check and retain a fault-tree result",
-    "start": 256.533,
-    "end": 286.283
+    "start": 198.433,
+    "end": 228.7
   },
   {
     "title": "Prepare and calculate RAM",
-    "start": 286.283,
-    "end": 335.083
+    "start": 228.7,
+    "end": 258.05
   },
   {
     "title": "Assign and complete actions",
-    "start": 335.083,
-    "end": 363.85
+    "start": 258.05,
+    "end": 274.167
   },
   {
     "title": "Recover a competing draft",
-    "start": 363.85,
-    "end": 392.183
+    "start": 274.167,
+    "end": 289.933
   },
   {
     "title": "Review and freeze a baseline",
-    "start": 392.183,
-    "end": 422.7
+    "start": 289.933,
+    "end": 304.8
   },
   {
     "title": "Share the right output",
-    "start": 422.7,
-    "end": 451.783
+    "start": 304.8,
+    "end": 334.567
   },
   {
     "title": "Restore and continue independently",
-    "start": 451.783,
-    "end": 479.683
+    "start": 334.567,
+    "end": 352.367
   }
 ]

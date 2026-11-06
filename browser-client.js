@@ -1,4 +1,4 @@
-import {WorkspaceStore} from './browser-store.mjs?v=7600fd5477bca45a';
+import {WorkspaceStore} from './browser-store.mjs?v=26233652cd1b3dd2';
 const saveFile=(name,bytes,type='application/vnd.sqlite3')=>{
   const url=URL.createObjectURL(new Blob([bytes],{type})),a=document.createElement('a');
   a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -8,7 +8,7 @@ export class BrowserClient {
     this.base=base;this.pending=new Map();this.next=0;this.epoch=0;this.state={mode:'loading'};this.changed=false;
     this.ready=new Promise((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;});
     this.ready.catch(()=>{});
-    this.worker=new Worker(new URL('browser-worker.js?v=7600fd5477bca45a',base),{type:'module'});
+    this.worker=new Worker(new URL('browser-worker.js?v=26233652cd1b3dd2',base),{type:'module'});
     this.worker.onmessage=({data})=>this.receive(data);
     this.worker.onerror=event=>this.stop(event.message||'The analysis engine stopped.');
     this.worker.onmessageerror=()=>this.stop('The analysis response could not be read.');
@@ -29,8 +29,11 @@ export class BrowserClient {
     banner.querySelector('span').textContent=message||(
       this.changed?'Saved in another tab. Reload this project before using its results.':
       this.state.mode==='memory'?'Device saving is unavailable. Work stays in this tab; download a workspace backup before closing.':
-      'Saved on this device · Download workspace backups to keep a separate copy.');
-    banner.classList.toggle('attention',Boolean(this.stopped||this.changed||this.state.mode==='memory'));
+      'Saved on this device');
+    const attention=Boolean(this.stopped||this.changed||this.state.mode==='memory');
+    banner.classList.toggle('attention',attention);
+    if(message||attention)document.querySelector('header').after(banner);
+    else document.querySelector('footer').prepend(banner);
     const actions=banner.querySelector('div');actions.replaceChildren();
     if(this.changed&&!this.stopped) {
       const button=document.createElement('button');button.textContent='Reload saved workspace';button.onclick=()=>location.reload();actions.append(button);
@@ -41,7 +44,7 @@ export class BrowserClient {
       }
     }
     const mode=document.getElementById('studyMode');
-    if(mode)mode.textContent=this.state.mode==='memory'?'Browser workspace · tab only':'Browser workspace';
+    if(mode){mode.textContent=this.state.mode==='memory'?'Browser workspace · tab only':'Browser workspace';mode.hidden=!message&&!attention;}
   }
   receive(data) {
     if(data.event==='progress'){this.watchStartup();this.update(data.message);return;}

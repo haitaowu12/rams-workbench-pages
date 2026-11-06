@@ -1,4 +1,4 @@
-import {BrowserClient} from './browser-client.js?v=7600fd5477bca45a';
+import {BrowserClient} from './browser-client.js?v=26233652cd1b3dd2';
 export const browserRuntime=document.documentElement.dataset.runtime==='browser'?new BrowserClient(new URL('./',import.meta.url)):null;
 export const runtimeReady=browserRuntime?.ready||Promise.resolve();
 export const request=(path,body)=>browserRuntime?browserRuntime.response(path,body):fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json','X-RAMS-Request':'1'},body:JSON.stringify(body)});

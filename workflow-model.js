@@ -1,4 +1,17 @@
 // Pure workflow rules shared by the live workbench and portable study.
+export const workAreas = [
+  {id:'study', label:'Study', views:[['overview','Overview'],['setup','Study definition'],['system','System & functions']]},
+  {id:'safety', label:'Safety', views:[['hazards','Hazard review'],['hazop','HAZOP worksheet'],['fmeca','FMEA worksheet'],['bowtie','Bow tie'],['fta','Fault tree']]},
+  {id:'reliability', label:'Reliability', views:[['ram','RAM models & results']]},
+  {id:'verification', label:'Verification', views:[['requirements','Requirements'],['evidence','Verification coverage']]},
+  {id:'review', label:'Review & report', views:[['review','Technical & trace review'],['actions','Actions'],['baselines','Baselines & history'],['reports','Reports & downloads']]},
+];
+export function workAreaFor(view, method, evidenceView) {
+  if(view==='evidence'&&evidenceView==='records')return null;
+  const destination=view==='studies'?method:view;
+  return workAreas.find(area=>area.views.some(([id])=>id===destination))||null;
+}
+
 export function actionState(record, today) {
   const data = record.data || {};
   if (typeof data.completion_evidence === 'string' && data.completion_evidence.trim()) return 'completed';

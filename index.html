@@ -4,14 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>RAMS Workbench</title>
-    <link rel="stylesheet" href="./style.css?v=7600fd5477bca45a" />
-    <link rel="stylesheet" href="./unified/engineering-view.css?v=7600fd5477bca45a" />
-    <script type="module" src="./app.js?v=7600fd5477bca45a"></script>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=26233652cd1b3dd2">
+    <link rel="stylesheet" href="./style.css?v=26233652cd1b3dd2" />
+    <link rel="stylesheet" href="./unified/engineering-view.css?v=26233652cd1b3dd2" />
+    <script type="module" src="./app.js?v=26233652cd1b3dd2"></script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to workspace</a>
     <header>
-      <strong class="brand"><span class="brand-mark" aria-hidden="true">R</span>RAMS Workbench</strong
+      <strong class="brand"><img class="brand-mark" src="./logo.svg?v=26233652cd1b3dd2" width="30" height="30" alt="">RAMS Workbench</strong
       ><label class="sr-only" for="projects">Project</label
       ><select id="projects">
         <option value="">Select a project</option></select
@@ -22,9 +23,6 @@
           <summary>Project menu</summary>
           <div>
             <button id="export">Download study</button>
-            <button data-view="setup">Study definition</button>
-            <button data-view="practice">Methods & study workflow</button>
-            <button data-view="baselines">Baselines & history</button>
             <button id="reload">Reload project</button>
             <button id="applicationStatus">Application status</button>
             <hr>
@@ -43,32 +41,20 @@
         </details>
       </div>
     </header>
-    <div id="studyProvenance" hidden>Fictional station study · parameters and evidence are synthetic.</div>
     <div id="notice" role="status" aria-live="polite"></div>
     <div class="shell">
       <button id="toggleNavigation" class="nav-toggle" aria-expanded="false" aria-controls="studyNavigation">Study navigation</button>
       <div class="study-navigation" id="studyNavigation">
         <nav class="app-nav" aria-label="Study">
-          <button data-view="overview">Study workspace</button>
-          <p class="nav-group">Define</p>
-          <button data-view="setup">Study definition</button>
-          <button data-view="system">System &amp; functions</button>
-          <p class="nav-group">Analyze</p>
-          <button data-view="hazards">Hazard review</button>
-          <button data-method="hazop">HAZOP</button>
-          <button data-method="fmeca">FMEA / FMECA</button>
-          <button data-method="bowtie">Bow tie</button>
-          <button data-method="fta">Fault trees</button>
-          <button data-view="ram">RAM / RBD</button>
-          <p class="nav-group">Resolve &amp; review</p>
-          <button data-view="requirements">Requirements</button>
-          <button data-view="evidence">Verification</button>
-          <button data-view="actions">Actions</button>
-          <button data-view="review">Review &amp; trace</button>
-          <button data-view="baselines">Baselines &amp; history</button>
-          <p class="nav-group">Reference</p>
-          <button data-view="practice">Method guide</button>
-          <button data-library>All records</button>
+          <button data-view="overview" data-work-area="study">Study</button>
+          <button data-view="hazards" data-work-area="safety">Safety</button>
+          <button data-view="ram" data-work-area="reliability">Reliability</button>
+          <button data-view="evidence" data-work-area="verification">Verification</button>
+          <button data-view="review" data-work-area="review">Review &amp; report</button>
+          <div class="nav-utilities">
+            <button data-library>Record library</button>
+            <button data-view="practice">Method reference</button>
+          </div>
         </nav>
         <details class="scope-menu">
           <summary id="scopeLabel">Scope: all systems</summary>
@@ -80,6 +66,9 @@
         </details>
       </div>
       <main id="main" tabindex="-1">
+        <div id="workAreaContext" class="work-area-context" hidden>
+          <label for="workspaceView">View</label><select id="workspaceView" aria-label="Workspace view"></select>
+        </div>
         <section id="workspace">
           <div id="content"><p role="status">Opening workspace…</p><noscript><p>Enable JavaScript to open the workspace.</p></noscript></div>
           <section id="inspector" aria-label="Selected record"></section>

@@ -1,11 +1,11 @@
 {
   "format": "rams-workbench/1",
   "project": {
-    "id": "P00295235b0234567a6e00edf40912ab5",
+    "id": "P1e8cd02a5e2d455d8fcbcdb43cd63c51",
     "title": "Station systems \u2014 complete demonstration study",
     "revision": 1,
     "config": {
-      "acceptance_process": "Training only. No approval authority or compliance claim.",
+      "acceptance_process": "Review owner and accepting authority unassigned.",
       "configuration": "Synthetic station concept, design revision 1",
       "governing_basis": "Fictional method demonstration with invented criteria. No contractual standard or safety approval is asserted.",
       "governing_standards": [],
@@ -41,7 +41,7 @@
           {
             "data": {
               "conditions": "Fictional indoor station; continuous active operation",
-              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_review": "Independent component failures; shared supply represented once in topology.",
               "dependency_status": "reviewed_independent",
               "mean_active_repair_hours": 4,
               "mode": "normal",
@@ -59,7 +59,7 @@
           {
             "data": {
               "conditions": "Fictional indoor station; continuous active operation",
-              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_review": "Independent component failures; shared supply represented once in topology.",
               "dependency_status": "reviewed_independent",
               "mean_active_repair_hours": 2,
               "mode": "normal",
@@ -77,7 +77,7 @@
           {
             "data": {
               "conditions": "Fictional indoor station; continuous active operation",
-              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_review": "Independent component failures; shared supply represented once in topology.",
               "dependency_status": "reviewed_independent",
               "mean_active_repair_hours": 3,
               "mode": "normal",
@@ -135,7 +135,7 @@
               },
               "severity": "S3"
             },
-            "description": "Fictional hazard for workflow demonstration; no real railway safety judgment.",
+            "description": "",
             "id": "HZ_001",
             "kind": "hazard",
             "revision": 1,
@@ -206,7 +206,7 @@
           },
           {
             "data": {
-              "applicability": "Illustrative only, no actual test execution",
+              "applicability": "Normal operation; concept configuration.",
               "artifact": "synthetic://test-001",
               "artifact_revision": "1",
               "configuration": "Synthetic baseline 1; normal mode",
@@ -259,7 +259,7 @@
                 "Operator lacks current status"
               ],
               "examination": "finding",
-              "examination_basis": "Synthetic desk-study finding; no multidisciplinary workshop was performed.",
+              "examination_basis": "Desk review of status feedback.",
               "guideword": "No",
               "parameter": "status feedback",
               "recommendations": [
@@ -286,7 +286,7 @@
               "probability": 0.1,
               "source": "Invented event probabilities for a shared-event Boolean example"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "EV_SHARED",
             "kind": "fault_event",
             "revision": 1,
@@ -303,7 +303,7 @@
               "probability": 0.2,
               "source": "Invented event probabilities for a shared-event Boolean example"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "EV_A",
             "kind": "fault_event",
             "revision": 1,
@@ -320,7 +320,7 @@
               "probability": 0.3,
               "source": "Invented event probabilities for a shared-event Boolean example"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "EV_B",
             "kind": "fault_event",
             "revision": 1,
@@ -332,7 +332,7 @@
               "logic": "OR",
               "mode": "normal"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "FT_TOP",
             "kind": "fault_gate",
             "revision": 1,
@@ -344,7 +344,7 @@
               "logic": "AND",
               "mode": "normal"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "FT_PATH_A",
             "kind": "fault_gate",
             "revision": 1,
@@ -356,7 +356,7 @@
               "logic": "AND",
               "mode": "normal"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "FT_PATH_B",
             "kind": "fault_gate",
             "revision": 1,
@@ -372,7 +372,7 @@
               "status": "proposed",
               "type": "preventive"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "CTRL_POWER",
             "kind": "control",
             "revision": 1,
@@ -388,7 +388,7 @@
               "status": "proposed",
               "type": "mitigative"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "CTRL_RESPONSE",
             "kind": "control",
             "revision": 1,
@@ -408,7 +408,7 @@
               "source_system": "synthetic",
               "verification_method": "test"
             },
-            "description": "Fictional methodology example; no actual railway judgment.",
+            "description": "",
             "id": "REQ_POWER",
             "kind": "requirement",
             "revision": 1,
@@ -418,7 +418,7 @@
           {
             "data": {
               "conditions": "Fictional indoor station; continuous active operation",
-              "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+              "dependency_review": "Independent component failures; shared supply represented once in topology.",
               "dependency_status": "reviewed_independent",
               "mean_active_repair_hours": 2,
               "mode": "normal",
@@ -426,7 +426,7 @@
               "rate_per_hour": 8e-05,
               "source": "Synthetic training fixture, revision 1"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "DOOR",
             "kind": "item",
             "revision": 1,
@@ -444,7 +444,7 @@
               "rate_per_hour": 3e-05,
               "source": "Synthetic training fixture, revision 1"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "LIGHT_A",
             "kind": "item",
             "revision": 1,
@@ -462,7 +462,7 @@
               "rate_per_hour": 4e-05,
               "source": "Synthetic training fixture, revision 1"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "LIGHT_B",
             "kind": "item",
             "revision": 1,
@@ -487,7 +487,7 @@
               },
               "severity": "S3"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "HZ_002",
             "kind": "hazard",
             "revision": 1,
@@ -496,7 +496,7 @@
           },
           {
             "data": {},
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "CAUSE_002",
             "kind": "cause",
             "revision": 1,
@@ -505,7 +505,7 @@
           },
           {
             "data": {},
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "CONS_002",
             "kind": "consequence",
             "revision": 1,
@@ -520,7 +520,7 @@
               "status": "proposed",
               "type": "preventive"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "CTRL_002",
             "kind": "control",
             "revision": 1,
@@ -546,7 +546,7 @@
               "due": "Not scheduled",
               "owner": "Synthetic verification team"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "ACT_002",
             "kind": "action",
             "revision": 1,
@@ -574,7 +574,7 @@
               "source": "synthetic://platform-design-1",
               "system_effect": "Platform access can be released during an unsafe condition."
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "FM_002",
             "kind": "failure_mode",
             "revision": 1,
@@ -599,7 +599,7 @@
               },
               "severity": "S3"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "HZ_003",
             "kind": "hazard",
             "revision": 1,
@@ -608,7 +608,7 @@
           },
           {
             "data": {},
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "CAUSE_003",
             "kind": "cause",
             "revision": 1,
@@ -617,7 +617,7 @@
           },
           {
             "data": {},
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "CONS_003",
             "kind": "consequence",
             "revision": 1,
@@ -632,7 +632,7 @@
               "status": "proposed",
               "type": "preventive"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "CTRL_003",
             "kind": "control",
             "revision": 1,
@@ -658,7 +658,7 @@
               "due": "Not scheduled",
               "owner": "Synthetic verification team"
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "ACT_003",
             "kind": "action",
             "revision": 1,
@@ -686,7 +686,7 @@
               "source": "synthetic://lighting-design-1",
               "system_effect": "Evacuation illumination is lost if the remaining support also fails."
             },
-            "description": "Fictional training record; no project acceptance implied.",
+            "description": "",
             "id": "FM_003",
             "kind": "failure_mode",
             "revision": 1,
@@ -1059,7 +1059,7 @@
         ],
         "project": {
           "config": {
-            "acceptance_process": "Training only. No approval authority or compliance claim.",
+            "acceptance_process": "Review owner and accepting authority unassigned.",
             "configuration": "Synthetic station concept, design revision 1",
             "governing_basis": "Fictional method demonstration with invented criteria. No contractual standard or safety approval is asserted.",
             "governing_standards": [],
@@ -1223,7 +1223,7 @@
         "due": "Not scheduled",
         "owner": "Synthetic verification team"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "ACT_002",
       "kind": "action",
       "revision": 1,
@@ -1236,7 +1236,7 @@
         "due": "Not scheduled",
         "owner": "Synthetic verification team"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "ACT_003",
       "kind": "action",
       "revision": 1,
@@ -1254,7 +1254,7 @@
     },
     {
       "data": {},
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "CAUSE_002",
       "kind": "cause",
       "revision": 1,
@@ -1263,7 +1263,7 @@
     },
     {
       "data": {},
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "CAUSE_003",
       "kind": "cause",
       "revision": 1,
@@ -1282,7 +1282,7 @@
     {
       "data": {
         "conditions": "Fictional indoor station; continuous active operation",
-        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_review": "Independent component failures; shared supply represented once in topology.",
         "dependency_status": "reviewed_independent",
         "mean_active_repair_hours": 2,
         "mode": "normal",
@@ -1300,7 +1300,7 @@
     {
       "data": {
         "conditions": "Fictional indoor station; continuous active operation",
-        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_review": "Independent component failures; shared supply represented once in topology.",
         "dependency_status": "reviewed_independent",
         "mean_active_repair_hours": 3,
         "mode": "normal",
@@ -1326,7 +1326,7 @@
     },
     {
       "data": {},
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "CONS_002",
       "kind": "consequence",
       "revision": 1,
@@ -1335,7 +1335,7 @@
     },
     {
       "data": {},
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "CONS_003",
       "kind": "consequence",
       "revision": 1,
@@ -1366,7 +1366,7 @@
         "status": "proposed",
         "type": "preventive"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "CTRL_002",
       "kind": "control",
       "revision": 1,
@@ -1381,7 +1381,7 @@
         "status": "proposed",
         "type": "preventive"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "CTRL_003",
       "kind": "control",
       "revision": 1,
@@ -1397,7 +1397,7 @@
         "status": "proposed",
         "type": "preventive"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "CTRL_POWER",
       "kind": "control",
       "revision": 1,
@@ -1413,7 +1413,7 @@
         "status": "proposed",
         "type": "mitigative"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "CTRL_RESPONSE",
       "kind": "control",
       "revision": 1,
@@ -1429,7 +1429,7 @@
           "Operator lacks current status"
         ],
         "examination": "finding",
-        "examination_basis": "Synthetic desk-study finding; no multidisciplinary workshop was performed.",
+        "examination_basis": "Desk review of status feedback.",
         "guideword": "No",
         "parameter": "status feedback",
         "recommendations": [
@@ -1449,7 +1449,7 @@
     {
       "data": {
         "conditions": "Fictional indoor station; continuous active operation",
-        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_review": "Independent component failures; shared supply represented once in topology.",
         "dependency_status": "reviewed_independent",
         "mean_active_repair_hours": 2,
         "mode": "normal",
@@ -1457,7 +1457,7 @@
         "rate_per_hour": 8e-05,
         "source": "Synthetic training fixture, revision 1"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "DOOR",
       "kind": "item",
       "revision": 1,
@@ -1474,7 +1474,7 @@
         "probability": 0.2,
         "source": "Invented event probabilities for a shared-event Boolean example"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "EV_A",
       "kind": "fault_event",
       "revision": 1,
@@ -1491,7 +1491,7 @@
         "probability": 0.3,
         "source": "Invented event probabilities for a shared-event Boolean example"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "EV_B",
       "kind": "fault_event",
       "revision": 1,
@@ -1508,7 +1508,7 @@
         "probability": 0.1,
         "source": "Invented event probabilities for a shared-event Boolean example"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "EV_SHARED",
       "kind": "fault_event",
       "revision": 1,
@@ -1536,7 +1536,7 @@
         "source": "synthetic://platform-design-1",
         "system_effect": "Platform access can be released during an unsafe condition."
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "FM_002",
       "kind": "failure_mode",
       "revision": 1,
@@ -1564,7 +1564,7 @@
         "source": "synthetic://lighting-design-1",
         "system_effect": "Evacuation illumination is lost if the remaining support also fails."
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "FM_003",
       "kind": "failure_mode",
       "revision": 1,
@@ -1576,7 +1576,7 @@
         "logic": "AND",
         "mode": "normal"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "FT_PATH_A",
       "kind": "fault_gate",
       "revision": 1,
@@ -1588,7 +1588,7 @@
         "logic": "AND",
         "mode": "normal"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "FT_PATH_B",
       "kind": "fault_gate",
       "revision": 1,
@@ -1600,7 +1600,7 @@
         "logic": "OR",
         "mode": "normal"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "FT_TOP",
       "kind": "fault_gate",
       "revision": 1,
@@ -1634,7 +1634,7 @@
         },
         "severity": "S3"
       },
-      "description": "Fictional hazard for workflow demonstration; no real railway safety judgment.",
+      "description": "",
       "id": "HZ_001",
       "kind": "hazard",
       "revision": 1,
@@ -1659,7 +1659,7 @@
         },
         "severity": "S3"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "HZ_002",
       "kind": "hazard",
       "revision": 1,
@@ -1684,7 +1684,7 @@
         },
         "severity": "S3"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "HZ_003",
       "kind": "hazard",
       "revision": 1,
@@ -1718,7 +1718,7 @@
         "rate_per_hour": 3e-05,
         "source": "Synthetic training fixture, revision 1"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "LIGHT_A",
       "kind": "item",
       "revision": 1,
@@ -1736,7 +1736,7 @@
         "rate_per_hour": 4e-05,
         "source": "Synthetic training fixture, revision 1"
       },
-      "description": "Fictional training record; no project acceptance implied.",
+      "description": "",
       "id": "LIGHT_B",
       "kind": "item",
       "revision": 1,
@@ -1772,7 +1772,7 @@
     {
       "data": {
         "conditions": "Fictional indoor station; continuous active operation",
-        "dependency_review": "Independent component failures; shared supply represented once in topology; no common-cause claim.",
+        "dependency_review": "Independent component failures; shared supply represented once in topology.",
         "dependency_status": "reviewed_independent",
         "mean_active_repair_hours": 4,
         "mode": "normal",
@@ -1854,7 +1854,7 @@
         "source_system": "synthetic",
         "verification_method": "test"
       },
-      "description": "Fictional methodology example; no actual railway judgment.",
+      "description": "",
       "id": "REQ_POWER",
       "kind": "requirement",
       "revision": 1,
@@ -1872,7 +1872,7 @@
     },
     {
       "data": {
-        "applicability": "Illustrative only, no actual test execution",
+        "applicability": "Normal operation; concept configuration.",
         "artifact": "synthetic://test-001",
         "artifact_revision": "1",
         "configuration": "Synthetic baseline 1; normal mode",

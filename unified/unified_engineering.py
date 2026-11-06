@@ -227,7 +227,6 @@ def bowtie(snapshot, hazard_id):
             label(root, margin + cw / 2 if left else end_x + cw / 2, mid, 'No linked cause' if left else 'No linked consequence', 12, MUTED)
     node(root, h, centre_x, mid - centre_h / 2, centre_w, centre_h, '#fff5df',
         'Qualitative top event', '#8a5b18', role='top-event')
-    footer(root, height, 'Barrier placement shows allocation only. Display order does not assert sequence, independence or effectiveness.')
     return tostring(root, encoding='unicode'), allocated
 
 
@@ -311,7 +310,7 @@ def fault_tree(snapshot, top):
                 'r': '14', 'fill': '#fff', 'stroke': STROKE, 'stroke-width': '1.6'})
         if usage[identity] > 1:
             label(group, x + w - 8, y + h - 5, f'SHARED · {usage[identity]} uses', 10, '#52678a', 'end', '600')
-    footer(root, height, 'Rectangles: event statements · circles: basic events · unarrowed connectors: Boolean inputs · no probability inferred')
+    footer(root, height, 'Rectangles: event statements · circles: basic events · unarrowed connectors: Boolean inputs')
     return tostring(root, encoding='unicode')
 
 
@@ -383,7 +382,6 @@ def rbd(snapshot, tree):
     line(root, 60 + w, mid, 92 + w, mid)
     for x in (28, 92 + w):
         SubElement(root, 'circle', {'cx': str(x), 'cy': str(mid), 'r': '4', 'fill': INK})
-    footer(root, h + 112, 'Series / active parallel only. Separate physical instances; no probability, independence or availability inferred by drawing.')
     return tostring(root, encoding='unicode')
 
 
@@ -622,10 +620,18 @@ def render(model):
         drawing = rbd(snapshot, model['topology'])
     from xml.etree.ElementTree import fromstring
     root = fromstring(drawing)
-    # Neutral paints participate in the existing unified Technical/Editorial themes.
+    # All presentation paints participate in the shared themes. Hardcoded light
+    # top-event/gate fills otherwise make themed text unreadable in dark mode.
     paints = {INK: 'var(--text,' + INK + ')', MUTED: 'var(--text-muted,' + MUTED + ')',
         STROKE: 'var(--arrow,' + STROKE + ')', '#ffffff': 'var(--panel,#ffffff)',
-        '#fff': 'var(--panel,#fff)', '#f6f9fb': 'var(--lane-fill,#f6f9fb)'}
+        '#fff': 'var(--panel,#fff)', '#f6f9fb': 'var(--lane-fill,#f6f9fb)',
+        '#fff5df': 'var(--unified-focal-fill,#fff5df)',
+        '#edf1f8': 'var(--panel,#edf1f8)',
+        '#eff8f7': 'var(--lane-fill,#eff8f7)', '#f1f4fa': 'var(--lane-fill,#f1f4fa)',
+        '#aabdc5': 'var(--lane-stroke,#aabdc5)', '#d5e0e5': 'var(--lane-stroke,#d5e0e5)',
+        '#8a5b18': 'var(--arrow-emphasis,#8a5b18)', '#334e76': 'var(--text,#334e76)'}
+    for colour in ('#426378', '#176a76', '#52678a', '#567583'):
+        paints[colour] = 'var(--text-muted,' + colour + ')'
     for element in root.iter():
         for attr in ('fill', 'stroke'):
             if element.get(attr) in paints:
