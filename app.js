@@ -305,11 +305,16 @@ function render() {
   document.body.dataset.view = view;
   let lineage = snapshot;
   let synthetic = false;
+  let crossrailTraining = false;
   while (lineage?.project) {
     synthetic ||= ['SYNTHETIC_STATION','SYNTHETIC_COMPLETE_STATION'].includes(lineage.project.id);
+    crossrailTraining ||= lineage.project.id === 'CROSSRAIL_VENTILATION_TRAINING';
     lineage = lineage.project.config?.import_lineage;
   }
-  $("#studyProvenance").hidden = !synthetic;
+  $("#studyProvenance").hidden = !synthetic && !crossrailTraining;
+  $("#studyProvenance").textContent = crossrailTraining
+    ? 'Crossrail-informed training study · records and test observations are synthetic.'
+    : 'Fictional station study · parameters and evidence are synthetic.';
   document.querySelectorAll(".app-nav button").forEach((b) => {
     const active = b.dataset.method ? view === "studies" && method === b.dataset.method : b.hasAttribute("data-library") ? view === "evidence" && evidenceView === "records" : b.dataset.view === view && !(view === "evidence" && evidenceView === "records");
     b.disabled = !snapshot;
@@ -423,9 +428,15 @@ function renderHazards() {
     <div class="board-toolbar"><div class="board-tabs" role="group" aria-label="Requirement filter"><button data-review-filter="all" aria-pressed="${reviewFilter==='all'}" class="${reviewFilter==='all'?'active':''}">All requirements <span>${trace.requirements.length}</span></button><button data-review-filter="missing" aria-pressed="${reviewFilter==='missing'}" class="${reviewFilter==='missing'?'active':''}">Without verification <span>${missing.length}</span></button></div><input id="search" type="search" aria-label="Search requirements or controls" placeholder="Search requirements or controls" value="${esc(query)}"></div>
     <section class="obligation-board" aria-label="Hazard requirement trace"><div class="obligation-labels" aria-hidden="true"><span>Requirement / implementing controls</span><span>Verification & applicability</span><span>Next action</span></div>${rows.map(r=>{
       const req=r.record, scopeRows=r.coverage.filter(v=>v.obligation);
-      return `<article class="obligation-row ${reviewFocus===req.id || r.verifications.some(v=>v.id===reviewFocus) || r.controls.includes(reviewFocus)?'selected':''}" data-trace-requirement="${esc(req.id)}"><div class="requirement-cell">${reviewLink(req.id)}<h3><button class="record-title" data-review-record="${esc(req.id)}">${esc(req.title)}</button></h3><div class="control-links">${r.controls.map(id=>`<span>${reviewLink(id)} <span>${esc(byId(id)?.title)}</span></span>`).join('')}${r.controls.length>1?'<small class="shared-label">Shared requirement</small>':''}</div></div><div class="evidence-cell">${r.verifications.length?r.verifications.map(v=>`<div>${reviewLink(v.id)} ${badge('declared '+(v.data.result || 'not run'),v.data.result==='pass'?'good':'warn')}<p>${esc(v.title)}</p><p class="applicability">${esc(v.data.applicability || 'Applicability not recorded')}</p></div>`).join(''):'<p class="evidence-gap"><span aria-hidden="true">○</span> No verification linked</p>'}${scopeRows.map(v=>`<p class="obligation-scope"><span class="record-id">${esc(v.obligation.id)}</span><br>${esc(v.obligation.mode)} · ${esc(v.obligation.configuration)}<br>${badge(v.status==='covered'?'Passing declaration':'Open obligation',v.status==='covered'?'good':'warn')}</p>`).join('')}${!scopeRows.length?'<p class="scope-note-inline">No explicit mode/configuration obligations</p>':''}</div><div class="row-actions">${!r.verifications.length?`<button class="primary" data-review-create="${esc(req.id)}">Add verification</button>`:`<button data-review-record="${esc(r.verifications[0].id)}">Inspect declaration</button>`}<button class="text-action" data-review-edit="${esc(req.id)}">${scopeRows.length?'Edit requirement':'Define obligations'}</button></div></article>`;
+      const nextScope = scopeRows.find(v => v.status !== 'covered');
+      const nextObligation = nextScope?.obligation;
+      const nextVerification = nextObligation ? r.verifications.find(v =>
+        v.data.obligation === nextObligation.id && v.data.mode === nextObligation.mode &&
+        v.data.configuration === nextObligation.configuration && v.data.requirement_revision === req.revision
+      ) : r.verifications[0];
+      return `<article class="obligation-row ${reviewFocus===req.id || r.verifications.some(v=>v.id===reviewFocus) || r.controls.includes(reviewFocus)?'selected':''}" data-trace-requirement="${esc(req.id)}"><div class="requirement-cell">${reviewLink(req.id)} <small class="muted">r${req.revision}</small><h3><button class="record-title" data-review-record="${esc(req.id)}">${esc(req.title)}</button></h3><div class="control-links">${r.controls.map(id=>`<span>${reviewLink(id)} <span>${esc(byId(id)?.title)}</span></span>`).join('')}${r.controls.length>1?'<small class="shared-label">Shared requirement</small>':''}</div></div><div class="evidence-cell">${r.verifications.length?r.verifications.map(v=>`<div>${reviewLink(v.id)} ${badge('declared '+(v.data.result || 'not run'),v.data.result==='pass'?'good':'warn')}<p>${esc(v.title)}</p>${scopeRows.length ? `<p class="applicability">${esc(v.data.obligation || "Obligation unspecified")} · ${esc(v.data.mode || "Mode unspecified")} · ${esc(v.data.configuration || "Configuration unspecified")} · requirement r${esc(v.data.requirement_revision ?? "unspecified")}</p>` : ""}<p class="applicability">${esc(v.data.applicability || 'Applicability not recorded')}</p></div>`).join(''):'<p class="evidence-gap"><span aria-hidden="true">○</span> No verification linked</p>'}${scopeRows.map(v=>`<p class="obligation-scope"><span class="record-id">${esc(v.obligation.id)}</span><br>${esc(v.obligation.mode)} · ${esc(v.obligation.configuration)}<br>${badge(v.status==='conflict'?'Conflicting declarations':v.status==='covered'?'Passing declaration':'Open obligation',v.status==='covered'?'good':'warn')}</p>`).join('')}${!scopeRows.length?'<p class="scope-note-inline">No explicit mode/configuration obligations</p>':''}</div><div class="row-actions">${nextScope?.status === "conflict" ? `<button data-review-record="${esc(req.id)}">Review conflicting declarations</button>` : !nextVerification?`<button class="primary" data-review-create="${esc(req.id)}"${nextObligation ? ` data-obligation="${esc(nextObligation.id)}"` : ""}>Add verification${nextObligation ? `: ${esc(nextObligation.id)}` : ""}</button>`:`<button data-review-record="${esc(nextVerification.id)}">Inspect declaration${nextObligation ? `: ${esc(nextObligation.id)}` : ""}</button>`}<button class="text-action" data-review-edit="${esc(req.id)}">${scopeRows.length?'Edit requirement':'Define obligations'}</button></div></article>`;
     }).join('') || `<div class="board-empty"><h3>${query?'No matching requirements':'No requirements in this view'}</h3><p>${query?'Try another ID or title, or clear the search.':'Link requirements to this hazard’s controls to develop its trace.'}</p>${query?'<button id="clearReviewSearch">Clear search</button>':`<button data-review-record="${esc(h.id)}">Inspect hazard controls</button>`}</div>`}</section>
-    <section class="review-actions"><div class="section-head"><h2>Follow-up actions <span class="board-count">${trace.actions.length}</span></h2><button data-related="action" data-target="${esc(h.id)}" data-relation="addresses">Add action</button></div>${trace.actions.map(a=>`<div class="next-action"><div>${reviewLink(a.id)}<p>${esc(a.title)}</p><small>Owner: ${esc(a.data.owner || 'Unassigned')} · Due: ${esc(a.data.due || 'Not scheduled')}</small></div><button data-review-edit="${esc(a.id)}">Edit action</button></div>`).join('') || '<p class="muted">No open follow-up actions linked to this hazard.</p>'}</section>`;
+    <section class="review-actions"><div class="section-head"><h2>Follow-up actions <span class="board-count">${trace.actions.length}</span></h2><button data-related="action" data-target="${esc(h.id)}" data-relation="addresses">Add action</button></div>${trace.actions.map(a=>`<div class="next-action"><div>${reviewLink(a.id)}<p>${esc(a.title)}</p><small>Owner: ${esc(a.data.owner || 'Unassigned')} · Due: ${esc(a.data.due || 'Not scheduled')}</small></div><button data-review-edit="${esc(a.id)}">Edit action</button></div>`).join('') || '<p class="muted">No open follow-up actions linked to this hazard.</p>'}</section>${trace.receivingConditions.length ? `<section class="review-actions"><h2>Receiving conditions</h2>${trace.receivingConditions.map(r=>`<div class="next-action"><div>${reviewLink(r.id)}<p>${esc(r.title)}</p><p>${esc(r.data.condition || "Condition not recorded")}</p><small>Receiving owner: ${esc(r.data.receiving_owner || "Unassigned")}<br>Disposition: ${esc(r.data.acceptance || "Not recorded")}<br>Receiving decision: ${esc(r.data.acceptance_reference || "Not recorded")}</small></div></div>`).join('')}</section>` : ''}`;
   renderReviewDock();
 }
 function renderReviewDock() {
@@ -491,7 +502,7 @@ function dataFacts(e) {
     )
     .map(
       ([k, v]) =>
-        `<div><dt>${esc(nice(k))}</dt><dd>${esc(Array.isArray(v) ? v.join("; ") : typeof v === "object" ? JSON.stringify(v) : v)}</dd></div>`,
+        `<div><dt>${esc(nice(k))}</dt><dd>${k === 'source_reference' && typeof v === 'string' && /^https?:\/\//i.test(v) ? `<a href="${esc(v)}" target="_blank" rel="noopener">Read source</a>` : esc(Array.isArray(v) ? v.join("; ") : typeof v === "object" ? JSON.stringify(v) : v)}</dd></div>`,
     )
     .join("");
 }
@@ -1861,7 +1872,7 @@ document.addEventListener("click", async (ev) => {
     if (b.id === 'closeReviewDetail') { const id=reviewOpenerId; reviewFocus=''; renderHazards(); writeRoute(); document.querySelector(`[data-review-record="${CSS.escape(id)}"]`)?.focus(); return; }
     if (b.dataset.reviewRecord) { openReviewRecord(b.dataset.reviewRecord); return; }
     if (b.dataset.reviewEdit) { openReviewRecord(b.dataset.reviewEdit,false); edit(b.dataset.reviewEdit,byId(b.dataset.reviewEdit).kind); return; }
-    if (b.dataset.reviewCreate) { openReviewRecord(b.dataset.reviewCreate,false); edit(null,'verification',{target:b.dataset.reviewCreate,relation:'verifies'}); return; }
+    if (b.dataset.reviewCreate) { openReviewRecord(b.dataset.reviewCreate,false); edit(null,'verification',{target:b.dataset.reviewCreate,relation:'verifies',obligation:b.dataset.obligation}); return; }
     if (b.dataset.reviewHazard) { notice(); view='hazards'; selected=b.dataset.reviewHazard;reviewFocus='';query='';render();return; }
     if (b.dataset.reviewFilter) { reviewFilter=b.dataset.reviewFilter;renderHazards();return; }
     if (b.id === 'clearReviewSearch') { query='';renderHazards();$('#search').focus();return; }
@@ -1888,7 +1899,7 @@ document.addEventListener("click", async (ev) => {
         b.dataset.select ||
         b.dataset.add ||
         b.dataset.edit ||
-        ["reload", "create", "example"].includes(b.id))
+        ["reload", "create", "example", "crossrailExample"].includes(b.id))
     ) {
       if (!confirm("Discard unsaved project setup changes?")) return;
       setupDirty = false;
@@ -1961,6 +1972,16 @@ document.addEventListener("click", async (ev) => {
       await projectList(created.project.id);
       await load(created.project.id, true);
       notice();
+    }
+    if (b.id === 'crossrailExample') {
+      const source = await api('/api/crossrail-example');
+      const created = await api('/api/create', {title:source.project.title,snapshot:source});
+      history.replaceState(null, '', location.pathname + location.search);
+      analysisDraft = null;
+      await projectList(created.project.id);
+      await load(created.project.id, true);
+      $('.project-menu').open = false;
+      notice('Ventilation training study opened. Start with Hazard review; source references are available on the records.');
     }
     if (b.id === "exportArchive") await exportStudy(true);
     if (b.id === "backupWorkspace") {
@@ -2518,6 +2539,7 @@ async function renderFTA() {
         config: ftaDraft,
       });
       ftaDirty = false;
+      if ($("#ftaCheckResult")) $("#ftaCheckResult").textContent = "";
       renderFTAResults();
       notice(
         "Fault-tree run retained with its exact snapshot and method basis.",
@@ -2787,7 +2809,7 @@ function renderCoverage() {
     table(['Requirement / revision', 'Obligation', 'Declaration coverage', 'Next step'], rows.map(r => {
       const req = byId(r.requirement), o = r.obligation;
       return row([`${link(req.id)}<p>${esc(req.title)}</p><span class="muted">Revision ${r.revision}</span>`, o ? `<strong>${esc(o.id)}</strong><p>${esc(o.mode)} · ${esc(o.configuration)}</p>` : '<span class="muted">No explicit obligations</span>',
-        `${badge(r.status === 'covered' ? 'Passing declaration' : r.status === 'legacy_declaration' ? 'Define obligations' : 'Missing declaration', r.status === 'covered' ? 'good' : 'warn')}<p>${r.verifications.map(link).join(' · ') || 'No verification linked'}</p>${r.incomplete.length ? '<p class="error">Incomplete or non-passing declarations remain.</p>' : ''}`,
+        `${badge(r.status === 'covered' ? 'Passing declaration' : r.status === 'conflict' ? 'Conflicting declarations' : r.status === 'legacy_declaration' ? 'Define obligations' : 'Missing declaration', r.status === 'covered' ? 'good' : 'warn')}<p>${r.verifications.map(link).join(' · ') || 'No verification linked'}</p>${r.incomplete.length ? '<p class="error">Incomplete or non-passing declarations remain.</p>' : ''}`,
         o ? `<button data-related="verification" data-target="${esc(req.id)}" data-relation="verifies" data-obligation="${esc(o.id)}">Add verification</button>` : `<button data-edit="${esc(req.id)}">Define obligations</button>`]);
     })) + (!all.length ? '<p class="empty">Add a requirement, then define its verification obligations for each mode and configuration.</p>' : '');
 }

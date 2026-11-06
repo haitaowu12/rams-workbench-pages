@@ -88,5 +88,6 @@ export function hazardTrace(snapshot, hazardId) {
   }
   const targetIds = new Set([hazardId,...controls.map(c=>c.id),...requirements.keys()]);
   const actions = snapshot.entities.filter(r => r.kind === 'action' && r.state !== 'archived' && !String(r.data?.completion_evidence || '').trim() && snapshot.links.some(l => l.source === r.id && l.relation === 'addresses' && targetIds.has(l.target)));
-  return {hazard,controls,requirements:[...requirements.values()],actions,coverage:(snapshot.coverage || []).find(c=>c.hazard === hazardId)};
+  const receivingConditions = snapshot.entities.filter(r => r.kind === 'srac' && r.state !== 'archived' && snapshot.links.some(l => l.source === r.id && l.relation === 'addresses' && targetIds.has(l.target)));
+  return {hazard,controls,requirements:[...requirements.values()],actions,receivingConditions,coverage:(snapshot.coverage || []).find(c=>c.hazard === hazardId)};
 }

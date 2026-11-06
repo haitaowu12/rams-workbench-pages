@@ -1,5 +1,5 @@
 {
-  "source_commit": "45fa7f87f258668c0620c4a78029870eec314826",
+  "source_commit": "a697b0406590c023a8f50f2422c63ff35f190c57",
   "hosting": "GitHub Pages branch publishing",
   "files": [
     {
@@ -9,13 +9,13 @@
     },
     {
       "path": "app.js",
-      "bytes": 168650,
-      "sha256": "ac400ca7a0ea33c13879a1b75ab5e5924bf151470c9a6776ce7808cda63d9931"
+      "bytes": 171515,
+      "sha256": "d3eb81c6104cb444f5cea9a3b30ff93458abc9a3c5d2f650bd38c66289e61518"
     },
     {
       "path": "application-source.zip",
-      "bytes": 202497,
-      "sha256": "23fdfc3b276d36401ace11b59912492000b876c12d1c8237f2eaae9f60c0d3c3"
+      "bytes": 211522,
+      "sha256": "be46ec143764726f8c11a22ca78abec7e5e4fb83ed3e48d0a51b1a318f3dc498"
     },
     {
       "path": "browser-client.js",
@@ -40,7 +40,7 @@
     {
       "path": "example-study.json",
       "bytes": 81188,
-      "sha256": "00980e466e8086b935a835b3c2807ad40b195bc0422273ebcbc5bd7636d092e7"
+      "sha256": "4be36c0f169e9ee7eafde5b6c1317c099325efb605f21757fa00e79e61a60fdb"
     },
     {
       "path": "fonts/ibm-plex-sans-LICENSE.txt",
@@ -199,8 +199,8 @@
     },
     {
       "path": "guide/index.html",
-      "bytes": 21853,
-      "sha256": "c74ea53919b8ec2b1e14c0edc5aa27b2b099f792cf9e5566bc352c963511b0fb"
+      "bytes": 23301,
+      "sha256": "0c0e4baab0d18d9fb068b774e920c8c9a2df9c18a27172c7c4603c36796fbb39"
     },
     {
       "path": "guide/transcript.html",
@@ -254,8 +254,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 6698,
-      "sha256": "3515564126f510af0cfc2e1501242e8ee1ae049a9eb1e747fa72070f91990e95"
+      "bytes": 6773,
+      "sha256": "06efc6bdfbff63065c52999af7dbdffd8454527db42d51d5b559d9c11351e922"
     },
     {
       "path": "licenses/CPython/Doc/license.rst",
@@ -384,23 +384,23 @@
     },
     {
       "path": "python-files.json",
-      "bytes": 7435,
-      "sha256": "1b68492282c7558af812bcb607b57bbfe088e1de3a4642b15540dcc6dc53f3e9"
+      "bytes": 7584,
+      "sha256": "9a63b2cbf7e4c24a1d697b3d76c499d40b31c6a796523f428ea3e43272ed9108"
     },
     {
       "path": "rams-workbench.zip",
-      "bytes": 13705358,
-      "sha256": "4cdb76fb71557ea5aed8caf8209bf742438bba0ac3b990699d1ef6bb1a3085cd"
+      "bytes": 13715040,
+      "sha256": "814733dfbb22e2bac52c8d4062c45c99a8e330d82eaf203b207ea13e102b2db1"
     },
     {
       "path": "rams-workbench.zip.sha256",
       "bytes": 85,
-      "sha256": "0314bb53b3f5aee45a8c1f143024f7210a2c4a43ba104d4e29941297606d9262"
+      "sha256": "81464a2cd09f589e11f24db8b003fd9650d7eb3baf292e04fb5137afb3ba4d0c"
     },
     {
       "path": "study.html",
-      "bytes": 739981,
-      "sha256": "c677b001bc3207e4a141632ec62aa846682af9e3f08c317dd341a8acc339c242"
+      "bytes": 743321,
+      "sha256": "3fde56fde9fcb495b924446a8034d5d2507b9fadc77c2ed870e04dd43294ef03"
     },
     {
       "path": "style.css",
@@ -444,8 +444,8 @@
     },
     {
       "path": "workflow-model.js",
-      "bytes": 5904,
-      "sha256": "61610a60c155a80bbc523f5ed3babe6481b2c58c27e6f137dcf6ce786e94cefa"
+      "bytes": 6134,
+      "sha256": "555b2b93e4b9ddfa8fbf207f35a6e24bcb4664fbb9568ee5f8c86a3fd87af582"
     }
   ]
 }
