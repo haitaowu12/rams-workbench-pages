@@ -1,6 +1,6 @@
-import {pythonCall as callPython} from './browser-python.mjs';
-import {loadPyodide} from './pyodide/pyodide.mjs';
-import {WorkspaceStore,WorkspaceConflict,MAX_WORKSPACE_BYTES,requireWorkspaceEpoch} from './browser-store.mjs';
+import {pythonCall as callPython} from './browser-python.mjs?v=7600fd5477bca45a';
+import {loadPyodide} from './pyodide/pyodide.mjs?v=7600fd5477bca45a';
+import {WorkspaceStore,WorkspaceConflict,MAX_WORKSPACE_BYTES,requireWorkspaceEpoch} from './browser-store.mjs?v=7600fd5477bca45a';
 const base=new URL('./',import.meta.url);
 const store=new WorkspaceStore('rams-workbench:'+base.pathname);
 let python, revision=0, epoch=0, initialRow, stage=null;
@@ -32,8 +32,10 @@ const ready=(async()=>{
   self.postMessage({event:'progress',message:'Opening device storage…'});
   await python.loadPackage('sqlite3');
   self.postMessage({event:'progress',message:'Loading study methods…'});
-  const manifest=await(await fetch(new URL('python-files.json',base))).json();
-  const response=await fetch(new URL(manifest.archive.path,base));
+  const manifest=await(await fetch(new URL('python-files.json?v=7600fd5477bca45a',base))).json();
+  const archiveURL=new URL(manifest.archive.path,base);
+  archiveURL.searchParams.set('v',manifest.archive.sha256);
+  const response=await fetch(archiveURL);
   if(!response.ok)throw Error('Required analysis files are unavailable. Reload after checking the connection.');
   const bytes=new Uint8Array(await response.arrayBuffer());
   const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(v=>v.toString(16).padStart(2,'0')).join('');

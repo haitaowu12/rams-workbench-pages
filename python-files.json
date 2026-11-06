@@ -111,7 +111,7 @@
     },
     {
       "path": "web/browser-worker.js",
-      "sha256": "22c5925f092e95d46e832dfb636dd80d495bbccdd40d86121ec29f9ae29137e5"
+      "sha256": "b2ebc3bd620fa916c9ce8a8352644c33784becc6a40ddcb99dd1fccd1d7aeb5f"
     },
     {
       "path": "web/fonts/ibm-plex-sans-LICENSE.txt",
@@ -216,7 +216,7 @@
   ],
   "archive": {
     "path": "application-source.zip",
-    "sha256": "be46ec143764726f8c11a22ca78abec7e5e4fb83ed3e48d0a51b1a318f3dc498",
-    "bytes": 211522
+    "sha256": "7600fd5477bca45acea16cea97389dd74a35c709866bb279354542a4526e2d56",
+    "bytes": 211551
   }
 }

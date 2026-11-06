@@ -1,5 +1,5 @@
 {
-  "source_commit": "a697b0406590c023a8f50f2422c63ff35f190c57",
+  "source_commit": "885021b575e0728048bcef75e145dc14cd268ef0",
   "hosting": "GitHub Pages branch publishing",
   "files": [
     {
@@ -9,18 +9,18 @@
     },
     {
       "path": "app.js",
-      "bytes": 171515,
-      "sha256": "d3eb81c6104cb444f5cea9a3b30ff93458abc9a3c5d2f650bd38c66289e61518"
+      "bytes": 171572,
+      "sha256": "45ef00046125342d744523d0546c0a3ff772881817a1db0e5e10bbcec288ee8e"
     },
     {
       "path": "application-source.zip",
-      "bytes": 211522,
-      "sha256": "be46ec143764726f8c11a22ca78abec7e5e4fb83ed3e48d0a51b1a318f3dc498"
+      "bytes": 211551,
+      "sha256": "7600fd5477bca45acea16cea97389dd74a35c709866bb279354542a4526e2d56"
     },
     {
       "path": "browser-client.js",
-      "bytes": 5873,
-      "sha256": "fc24e7f49e33c8eb0405c6e865498d6f4236f3732993e0766e37ea11a545b3f5"
+      "bytes": 5911,
+      "sha256": "cbca5c3188459c88e63faa39eaf01db6308e2c636512e8ec31ecb892b3a4b545"
     },
     {
       "path": "browser-python.mjs",
@@ -34,13 +34,13 @@
     },
     {
       "path": "browser-worker.js",
-      "bytes": 6912,
-      "sha256": "22c5925f092e95d46e832dfb636dd80d495bbccdd40d86121ec29f9ae29137e5"
+      "bytes": 7079,
+      "sha256": "b54200ca8e95d56d0822f00f168900ddff7617a4851c10cdcd0015b94a19a83d"
     },
     {
       "path": "example-study.json",
       "bytes": 81188,
-      "sha256": "4be36c0f169e9ee7eafde5b6c1317c099325efb605f21757fa00e79e61a60fdb"
+      "sha256": "884f765a2acec9f8c1d95dd18df76b5d6dfadcb0c5120f6dbdde0332bab46f70"
     },
     {
       "path": "fonts/ibm-plex-sans-LICENSE.txt",
@@ -254,8 +254,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 6773,
-      "sha256": "06efc6bdfbff63065c52999af7dbdffd8454527db42d51d5b559d9c11351e922"
+      "bytes": 6830,
+      "sha256": "2a2be1ab8f17e8b132d872e011d31eb2bce7139eb525688b2e101b6beb041974"
     },
     {
       "path": "licenses/CPython/Doc/license.rst",
@@ -385,22 +385,22 @@
     {
       "path": "python-files.json",
       "bytes": 7584,
-      "sha256": "9a63b2cbf7e4c24a1d697b3d76c499d40b31c6a796523f428ea3e43272ed9108"
+      "sha256": "07bea6da1d60d64f2148fbf7ac514627373e8800fd8217ed1777af655746cd66"
     },
     {
       "path": "rams-workbench.zip",
-      "bytes": 13715040,
-      "sha256": "814733dfbb22e2bac52c8d4062c45c99a8e330d82eaf203b207ea13e102b2db1"
+      "bytes": 13715069,
+      "sha256": "80fa4970866d591006e9f65cef8514dc63cc5ba71b38d89b1eedcb1945439064"
     },
     {
       "path": "rams-workbench.zip.sha256",
       "bytes": 85,
-      "sha256": "81464a2cd09f589e11f24db8b003fd9650d7eb3baf292e04fb5137afb3ba4d0c"
+      "sha256": "41556c87930aab77098cb5a62f34426b7d7db828b7006f9c9cf0eb4d010e09d7"
     },
     {
       "path": "study.html",
       "bytes": 743321,
-      "sha256": "3fde56fde9fcb495b924446a8034d5d2507b9fadc77c2ed870e04dd43294ef03"
+      "sha256": "30601f55b5b9c307de1e5f9f09df5e90ee86bee84b8a17838ba36ca4ae79da63"
     },
     {
       "path": "style.css",
@@ -409,8 +409,8 @@
     },
     {
       "path": "transport.js",
-      "bytes": 1167,
-      "sha256": "4c5d996890af2f1ff55a9b3b26b85733cd6ba11ea71d203e1ecddc5a005adf17"
+      "bytes": 1186,
+      "sha256": "9ed671f792e2d08f4927e7a55e7fbf8cbe3180d763c9ade9f061e90a1ff26bd8"
     },
     {
       "path": "unified/README.md",
